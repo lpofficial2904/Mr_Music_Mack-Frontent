@@ -265,6 +265,27 @@ const collectionVideoCategories = [
   },
 ];
 
+const musicEditingVideoShowcase = {
+  id: "music-editing-showcase",
+  label: "Music Editing Reels",
+  description: "Performance edits, song mixes and stage-ready music moments from the collection.",
+  videos: [
+    ["ohmymosh-song-mix", "Song Mix Performance", "Music editing", "ohmymosh-song-mix.mp4"],
+    ["love-wedding-performance", "Wedding Performance Edit", "Wedding music", "love-wedding-performance.mp4"],
+    ["sangeet-squad-practice", "Sangeet Track Flow", "Sangeet edit", "sangeet-squad-practice.mp4"],
+    ["peak-sangeet", "Peak Sangeet Mix", "Dance mashup", "peak-sangeet.mp4"],
+    ["serving-sangeet", "Group Performance Track", "Performance edit", "serving-sangeet.mp4"],
+    ["video-75926", "Stage Dance Mix", "Stage track", "video-75926.mp4"],
+  ],
+};
+
+const musicEditingVideoSections = [
+  musicEditingVideoShowcase,
+  ...collectionVideoCategories.filter(({ id }) => ["sangeet", "stage"].includes(id)),
+];
+
+const getCollectionVideoKey = (categoryId, index) => `${categoryId}::${index}`;
+
 export default function OurWork({ initialCategory = "editing", collectionPage = false, onStart }) {
   const [category, setCategory] = useState(initialCategory);
   const [filter, setFilter] = useState("All");
@@ -276,6 +297,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
   const [activeCollectionVideos, setActiveCollectionVideos] = useState(() =>
     Object.fromEntries(collectionVideoCategories.map((item) => [item.id, 0])),
   );
+  const [audibleCollectionVideo, setAudibleCollectionVideo] = useState("");
   const [visibleVideoCategories, setVisibleVideoCategories] = useState(() => new Set());
   const activeAudio = useRef(null);
   const instagramSection = useRef(null);
@@ -479,7 +501,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
   }, [collectionPage]);
 
   useEffect(() => {
-    if (!collectionPage || visibleVideoCategories.size === 0) return undefined;
+    if (!collectionPage || visibleVideoCategories.size === 0 || audibleCollectionVideo) return undefined;
 
     const timer = window.setInterval(() => {
       setActiveCollectionVideos((current) => {
@@ -489,18 +511,19 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
           if (!categoryData) return;
           next[categoryId] = ((next[categoryId] || 0) + 1) % categoryData.videos.length;
         });
+        setAudibleCollectionVideo("");
         return next;
       });
     }, 6200);
 
     return () => window.clearInterval(timer);
-  }, [collectionPage, visibleVideoCategories]);
+  }, [audibleCollectionVideo, collectionPage, visibleVideoCategories]);
 
   useEffect(() => {
     if (!collectionPage) return;
 
     collectionVideoPlayers.current.forEach((player, key) => {
-      const [categoryId, rawIndex] = key.split("-");
+      const [categoryId, rawIndex] = key.split("::");
       const shouldPlay =
         visibleVideoCategories.has(categoryId) &&
         Number(rawIndex) === (activeCollectionVideos[categoryId] || 0);
@@ -510,16 +533,17 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
         return;
       }
 
-      player.muted = true;
+      player.muted = key !== audibleCollectionVideo;
+      player.volume = key === audibleCollectionVideo ? 1 : 0;
       player.currentTime = player.currentTime || 0;
       player.play().catch(() => {});
     });
-  }, [activeCollectionVideos, collectionPage, visibleVideoCategories]);
+  }, [activeCollectionVideos, audibleCollectionVideo, collectionPage, visibleVideoCategories]);
 
   useEffect(() => {
     if (!collectionPage) return;
     visibleVideoCategories.forEach((categoryId) => {
-      collectionVideoCards.current.get(`${categoryId}-${activeCollectionVideos[categoryId] || 0}`)?.scrollIntoView({
+      collectionVideoCards.current.get(getCollectionVideoKey(categoryId, activeCollectionVideos[categoryId] || 0))?.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
         inline: "center",
@@ -615,6 +639,19 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     });
   };
 
+  const playCollectionVideoWithSound = (categoryId, index) => {
+    const playerKey = getCollectionVideoKey(categoryId, index);
+    setCollectionVideoIndex(categoryId, index);
+    setAudibleCollectionVideo(playerKey);
+
+    const player = collectionVideoPlayers.current.get(playerKey);
+    if (!player) return;
+
+    player.muted = false;
+    player.volume = 1;
+    player.play().catch(() => {});
+  };
+
   const renderCollectionVideoSlider = (categoryData, categoryIndex) => {
     const activeIndex = activeCollectionVideos[categoryData.id] || 0;
 
@@ -641,7 +678,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
         <div className="collection-local-video-track">
           {categoryData.videos.map(([id, title, tag, filename], index) => {
             const isActive = index === activeIndex;
-            const playerKey = `${categoryData.id}-${index}`;
+            const playerKey = getCollectionVideoKey(categoryData.id, index);
 
             return (
               <article
@@ -651,7 +688,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
                   if (node) collectionVideoCards.current.set(playerKey, node);
                   else collectionVideoCards.current.delete(playerKey);
                 }}
-                onClick={() => setCollectionVideoIndex(categoryData.id, index)}
+                onClick={() => playCollectionVideoWithSound(categoryData.id, index)}
               >
                 <video
                   ref={(node) => {
@@ -659,9 +696,13 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
                     else collectionVideoPlayers.current.delete(playerKey);
                   }}
                   src={`/collection-videos/${filename}`}
-                  muted
+                  muted={audibleCollectionVideo !== playerKey}
                   playsInline
-                  loop
+                  loop={audibleCollectionVideo !== playerKey}
+                  onEnded={() => {
+                    if (audibleCollectionVideo === playerKey) setAudibleCollectionVideo("");
+                  }}
+                  controls={isActive}
                   preload={isActive ? "auto" : "metadata"}
                 />
                 <div className="collection-local-video-copy">
@@ -674,7 +715,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
                   aria-label={`Show ${title}`}
                   onClick={(event) => {
                     event.stopPropagation();
-                    setCollectionVideoIndex(categoryData.id, index);
+                    playCollectionVideoWithSound(categoryData.id, index);
                   }}
                 >
                   {String(index + 1).padStart(2, "0")}
@@ -687,11 +728,10 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
       <div className="collection-video-controls" aria-label="Video slider controls">
         <button
           type="button"
-          onClick={() =>
-            setCollectionVideoIndex(categoryData.id, (index) =>
-              index === 0 ? categoryData.videos.length - 1 : index - 1,
-            )
-          }
+          onClick={() => {
+            const nextIndex = activeIndex === 0 ? categoryData.videos.length - 1 : activeIndex - 1;
+            playCollectionVideoWithSound(categoryData.id, nextIndex);
+          }}
         >
           Prev
         </button>
@@ -702,15 +742,16 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
               type="button"
               aria-label={`Go to video ${index + 1}`}
               aria-pressed={index === activeIndex}
-              onClick={() => setCollectionVideoIndex(categoryData.id, index)}
+              onClick={() => playCollectionVideoWithSound(categoryData.id, index)}
             />
           ))}
         </div>
         <button
           type="button"
-          onClick={() =>
-            setCollectionVideoIndex(categoryData.id, (index) => (index + 1) % categoryData.videos.length)
-          }
+          onClick={() => {
+            const nextIndex = (activeIndex + 1) % categoryData.videos.length;
+            playCollectionVideoWithSound(categoryData.id, nextIndex);
+          }}
         >
           Next
         </button>
@@ -1030,6 +1071,10 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
           </m.article>
         ))}
       </div>
+      {category === "editing" &&
+        musicEditingVideoSections.map((section, index) =>
+          renderCollectionVideoSlider(section, index),
+        )}
       <section className="collection-portfolio" aria-labelledby="collection-portfolio-title">
         <div className="collection-hero-copy">
           <p className="eyebrow">CREATIVE PERFORMANCE STUDIO / SERVING CLIENTS ACROSS INDIA</p>

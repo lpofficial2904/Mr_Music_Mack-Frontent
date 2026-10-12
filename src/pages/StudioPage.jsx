@@ -1,6 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
-import choreographerFeatureImage from "../assets/choreographer-feature-background.jpg";
 import "./StudioPage.css";
 
 const studioPhotos = {
@@ -9,7 +8,7 @@ const studioPhotos = {
   musicProduction: "/studio-gallery/studio-image-04.jpg",
 };
 
-const choreographyImage = choreographerFeatureImage;
+const choreographyImage = "/costume-gallery/costume-wedding-sangeet-performance.jpg";
 const costumeImage = "/costume-gallery/costume-blue-stage-gown.jpg";
 
 const expertise = [

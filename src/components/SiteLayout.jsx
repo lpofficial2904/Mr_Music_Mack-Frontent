@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import PageContent from "./PageContent";
 import { MobileProjectCTA } from "./ProjectCTA";
+import VideoPlaybackGuard from "./VideoPlaybackGuard";
 import { apiUrl, hasApiBackend } from "../api";
 
 const ProjectBriefModal = lazy(() => import("./ProjectBriefModal"));
@@ -70,6 +71,7 @@ export default function SiteLayout() {
 
   return (
     <>
+      <VideoPlaybackGuard />
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>

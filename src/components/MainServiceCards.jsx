@@ -14,11 +14,11 @@ const curatedServiceImages = {
     imageAlt: "Piano and instruments in a professional recording studio",
   },
   "/costume-design": {
-    image: "/main-service-cards/costume-design.jpg",
-    imageAlt: "Performer wearing a dramatic purple stage costume",
+    image: "/costume-gallery/costume-family-wedding-look.jpg",
+    imageAlt: "Coordinated group costume look from the MR MUSIC MACK costume collection",
   },
   "/choreographer": {
-    image: "/main-service-cards/choreography.jpg",
+    image: "/costume-gallery/costume-wedding-sangeet-performance.jpg",
     imageAlt: "Wedding couple and dancers performing a choreographed sangeet routine",
   },
 };

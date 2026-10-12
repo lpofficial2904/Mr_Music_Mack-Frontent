@@ -16,7 +16,8 @@ const defaultServices = [
 ];
 
 export default function StudioShowcase({ siteContent }) {
-  const [active, setActive] = useState(0);
+  const defaultActiveIndex = 1;
+  const [active, setActive] = useState(defaultActiveIndex);
   const reduceMotion = useReducedMotion();
   const services = siteContent?.home?.studioCards?.length
     ? siteContent.home.studioCards.map((card, index) => [
@@ -35,10 +36,10 @@ export default function StudioShowcase({ siteContent }) {
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: reduceMotion ? 0 : 0.65 }}
       onPointerLeave={(event) => {
-        if (event.pointerType === "mouse") setActive(0);
+        if (event.pointerType === "mouse") setActive(defaultActiveIndex);
       }}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setActive(0);
+        if (!event.currentTarget.contains(event.relatedTarget)) setActive(defaultActiveIndex);
       }}
     >
       <div className="showcase-images" aria-hidden="true">
@@ -52,7 +53,7 @@ export default function StudioShowcase({ siteContent }) {
           />
         ))}
       </div>
-      {services.map(([title], index) => (
+      {services.map(([title, image], index) => (
         <m.button
           className={`showcase-panel${active === index ? " is-active" : ""}`}
           type="button"

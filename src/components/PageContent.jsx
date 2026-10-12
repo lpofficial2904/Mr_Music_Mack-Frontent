@@ -8,7 +8,8 @@ import {
 } from "../siteData";
 import ProjectCTA from "./ProjectCTA";
 import ServiceGallery from "./ServiceGallery";
-import choreographerHeroImage from "../assets/choreographer-hero-background.jpg";
+
+const choreographerHeroImage = "/costume-gallery/costume-wedding-sangeet-performance.jpg";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const ServicePage = lazy(() => import("../pages/ServicePage"));
@@ -228,7 +229,7 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
       ["meta", { property: "og:description", content: metaDescription }],
       ["meta", { property: "og:url", content: canonicalUrl }],
       ["meta", { property: "og:image", content: socialImage }],
-      ["meta", { property: "og:image:alt", content: "Illustrative wedding choreography concept by MR MUSIC MACK" }],
+      ["meta", { property: "og:image:alt", content: "Wedding and sangeet choreography from the MR MUSIC MACK collection" }],
       ["meta", { name: "twitter:card", content: "summary_large_image" }],
       ["meta", { name: "twitter:title", content: metaTitle }],
       ["meta", { name: "twitter:description", content: metaDescription }],

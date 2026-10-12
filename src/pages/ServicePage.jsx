@@ -21,8 +21,9 @@ import {
   serviceSeoContent,
 } from "../siteData";
 import StudioPage from "./StudioPage";
-import choreographerHeroImage from "../assets/choreographer-hero-background.jpg";
-import choreographerFeatureImage from "../assets/choreographer-feature-background.jpg";
+
+const choreographerHeroImage = "/costume-gallery/costume-wedding-sangeet-performance.jpg";
+const choreographerFeatureImage = "/costume-gallery/costume-family-wedding-look.jpg";
 
 const featureSets = {
   "/music-editing": {
@@ -77,8 +78,8 @@ const featureSets = {
         title: "Couple & Family Dance",
         label: "COUPLE & FAMILY",
         copy: "Romantic couple dance, bride and groom choreography and family routines planned around comfort, chemistry and stage confidence.",
-        image: "/costume-gallery/costume-family-wedding-look.jpg",
-        imageAlt: "Family wedding celebration styling for couple and group performance planning",
+        image: "/costume-gallery/costume-blue-bridal-look.jpg",
+        imageAlt: "Bride and groom with blue-costumed dancers during a choreographed wedding moment",
         href: "/lets-connect",
         cta: "Discuss a couple or family performance",
       },
@@ -86,8 +87,8 @@ const featureSets = {
         title: "Stage & Event Choreography",
         label: "STAGE READY",
         copy: "Clean counts, formations, transitions and performance flow for stage shows, school functions, college events and cultural programs.",
-        image: choreographerFeatureImage,
-        imageAlt: "Stage choreography group performance under premium event lighting",
+        image: "/costume-gallery/costume-purple-stage-look.jpg",
+        imageAlt: "Stage performer in a purple costume with supporting dancers and event lighting",
         href: "/lets-connect",
         cta: "Enquire about stage choreography",
       },
@@ -272,6 +273,7 @@ const choreographyProjects = [
     description:
       "A bride solo performance from the MR MUSIC MACK choreography video collection.",
     filename: "bride-expressions.mp4",
+    poster: "/costume-gallery/costume-blue-stage-gown.jpg",
   },
   {
     id: "couple-chemistry",
@@ -280,6 +282,7 @@ const choreographyProjects = [
     description:
       "A couple dance performance featured in the wedding choreography video collection.",
     filename: "couple-chemistry.mp4",
+    poster: "/costume-gallery/costume-blue-bridal-look.jpg",
   },
   {
     id: "sangeet-squad-practice",
@@ -288,6 +291,7 @@ const choreographyProjects = [
     description:
       "A group choreography video featuring a sangeet performance routine.",
     filename: "sangeet-squad-practice.mp4",
+    poster: "/costume-gallery/costume-family-wedding-look.jpg",
   },
   {
     id: "varmala-execution",
@@ -296,6 +300,7 @@ const choreographyProjects = [
     description:
       "A ceremony-led choreography moment from the MR MUSIC MACK video collection.",
     filename: "varmala-execution.mp4",
+    poster: "/costume-gallery/costume-wedding-sangeet-performance.jpg",
   },
 ];
 
@@ -354,7 +359,7 @@ function ChoreographerSeoSections() {
               >
                 <div className="choreo-video-frame">
                   <img
-                    src={choreographerFeatureImage}
+                    src={project.poster || choreographerFeatureImage}
                     alt={`Illustrative thumbnail for ${project.title}, a ${project.category.toLowerCase()} video`}
                     loading="lazy"
                   />
@@ -374,7 +379,7 @@ function ChoreographerSeoSections() {
                     autoPlay={isPlaying}
                     playsInline
                     preload="none"
-                    poster={choreographerFeatureImage}
+                    poster={project.poster || choreographerFeatureImage}
                     aria-label={`${project.title} — ${project.category} choreography video`}
                     tabIndex={isPlaying ? 0 : -1}
                   >

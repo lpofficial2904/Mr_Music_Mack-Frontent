@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, writeFile, rm } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { render } from "../.prerender/entry-server.js";
 import {
   choreographerSeo,
@@ -34,15 +34,8 @@ for (const route of routes) {
   markup = markup.replace(title, "").replace(description, "");
   const headTags = [];
   if (route === "/choreographer") {
-    const builtAssets = await readdir(new URL("assets/", dist));
-    const heroImage = builtAssets.find((asset) =>
-      /^choreographer-hero-background-.*\.jpg$/.test(asset),
-    );
-    if (!heroImage) {
-      throw new Error("Could not find the choreographer social preview image in the production assets.");
-    }
     const canonicalUrl = `${siteUrl}/choreographer`;
-    const socialImage = `${siteUrl}/assets/${heroImage}`;
+    const socialImage = `${siteUrl}/costume-gallery/costume-wedding-sangeet-performance.jpg`;
     const attributes = (values) =>
       Object.entries({ ...values, "data-page-seo": "choreographer" })
         .map(([name, value]) => `${name}="${String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;")}"`)
@@ -61,7 +54,7 @@ for (const route of routes) {
       meta({ property: "og:image", content: socialImage }),
       meta({
         property: "og:image:alt",
-        content: "Illustrative wedding choreography concept by MR MUSIC MACK",
+        content: "Wedding and sangeet choreography from the MR MUSIC MACK collection",
       }),
       meta({ name: "twitter:card", content: "summary_large_image" }),
       meta({ name: "twitter:title", content: choreographerSeo.title }),

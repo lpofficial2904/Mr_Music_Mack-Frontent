@@ -4,8 +4,6 @@ import { StudioIcon, WhatsAppIcon } from "./Icons";
 import premiumStudioHero from "../assets/hero-studio-background-branded.jpg";
 import mobileCardBackground from "../assets/showcase-card-background.png";
 import musicEditingImage from "../assets/music-editing-studio.png";
-import choreographerImage from "../assets/choreographer-feature-background.jpg";
-import collectionImage from "../assets/showcase-voice-recording.jpg";
 
 import "./Hero.css";
 
@@ -26,9 +24,9 @@ const defaultVideoCards = [
     video: "/videos/music-editing-showcase.mp4",
     to: "/music-editing",
   },
-  { title: "Choreographer", image: choreographerImage, to: "/choreographer" },
-  { title: "Costume Design", image: "/costume-gallery/costume-blue-stage-gown.jpg", to: "/costume-design" },
-  { title: "The Collection", image: collectionImage, to: "/the-collection" },
+  { title: "Choreographer", image: "/costume-gallery/costume-wedding-sangeet-performance.jpg", to: "/choreographer" },
+  { title: "Costume Design", image: "/costume-gallery/costume-family-wedding-look.jpg", to: "/costume-design" },
+  { title: "The Collection", image: "/costume-gallery/costume-blue-bridal-look.jpg", to: "/the-collection" },
 ];
 
 const defaultFeatureCards = [
