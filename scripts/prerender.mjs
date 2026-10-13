@@ -1,10 +1,6 @@
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { render } from "../.prerender/entry-server.js";
-import {
-  choreographerSeo,
-  createChoreographerSchema,
-  landingPages,
-} from "../src/siteData.js";
+import { landingPages } from "../src/siteData.js";
 
 const routes = [...new Set([
   "/",
@@ -26,51 +22,47 @@ const siteUrl = (process.env.VITE_SITE_URL || "https://mrmusicmack.com").replace
   /\/$/,
   "",
 );
+const defaultHeadPattern =
+  /<title>[\s\S]*?<\/title>\s*<meta\s+name="description"[^>]*\/>/;
+
 for (const route of routes) {
-  let markup = await render(route);
-  const title = markup.match(/<title>[\s\S]*?<\/title>/)?.[0] || "";
-  const description =
+  const rendered = await render(route);
+  const markup = typeof rendered === "string" ? rendered : rendered.html;
+  const helmet = typeof rendered === "string" ? null : rendered.helmet;
+  const fallbackTitle = markup.match(/<title>[\s\S]*?<\/title>/)?.[0] || "";
+  const fallbackDescription =
     markup.match(/<meta\s+name="description"[^>]*\/>/)?.[0] || "";
-  markup = markup.replace(title, "").replace(description, "");
-  const headTags = [];
-  if (route === "/choreographer") {
-    const canonicalUrl = `${siteUrl}/choreographer`;
-    const socialImage = `${siteUrl}/costume-gallery/costume-wedding-sangeet-performance.jpg`;
-    const attributes = (values) =>
-      Object.entries({ ...values, "data-page-seo": "choreographer" })
-        .map(([name, value]) => `${name}="${String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;")}"`)
-        .join(" ");
-    const meta = (values) => `<meta ${attributes(values)} />`;
-    headTags.push(
-      `<link ${attributes({ rel: "canonical", href: canonicalUrl })} />`,
-      meta({
-        name: "robots",
-        content: "index, follow, max-image-preview:large",
-      }),
-      meta({ property: "og:type", content: "website" }),
-      meta({ property: "og:title", content: choreographerSeo.title }),
-      meta({ property: "og:description", content: choreographerSeo.description }),
-      meta({ property: "og:url", content: canonicalUrl }),
-      meta({ property: "og:image", content: socialImage }),
-      meta({
-        property: "og:image:alt",
-        content: "Wedding and sangeet choreography from the MR MUSIC MACK collection",
-      }),
-      meta({ name: "twitter:card", content: "summary_large_image" }),
-      meta({ name: "twitter:title", content: choreographerSeo.title }),
-      meta({ name: "twitter:description", content: choreographerSeo.description }),
-      meta({ name: "twitter:image", content: socialImage }),
-      meta({ name: "keywords", content: choreographerSeo.keywords }),
-      `<script type="application/ld+json" data-page-seo="choreographer">${JSON.stringify(
-        createChoreographerSchema(siteUrl, choreographerSeo.description),
-      ).replaceAll("<", "\\u003c")}</script>`,
-    );
-  }
+  let cleanMarkup = markup.replace(fallbackTitle, "").replace(fallbackDescription, "");
+  const bodyHeadTags = [];
+  cleanMarkup = cleanMarkup
+    .replace(/<meta\b[^>]*\/>/g, (tag) => {
+      bodyHeadTags.push(tag);
+      return "";
+    })
+    .replace(/<link\s+rel="canonical"[^>]*\/>/g, (tag) => {
+      bodyHeadTags.push(tag);
+      return "";
+    })
+    .replace(/<script\s+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g, (tag) => {
+      bodyHeadTags.push(tag);
+      return "";
+    });
+  const helmetHead = helmet
+    ? [
+        helmet.title.toString(),
+        helmet.priority.toString(),
+        helmet.meta.toString(),
+        helmet.link.toString(),
+        helmet.script.toString(),
+      ]
+        .filter(Boolean)
+        .join("\n    ")
+    : [fallbackTitle, fallbackDescription].filter(Boolean).join("\n    ");
+  const headTags = [...new Set([helmetHead, ...bodyHeadTags].filter(Boolean))]
+    .join("\n    ");
   const html = template
-    .replace(/<title>[\s\S]*?<\/title>/, title)
-    .replace(/<meta\s+name="description"[^>]*\/>/, description)
-    .replace("</head>", `${headTags.join("\n    ")}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${markup}</div>`);
+    .replace(defaultHeadPattern, headTags)
+    .replace('<div id="root"></div>', `<div id="root">${cleanMarkup}</div>`);
   const folder = new URL(route === "/" ? "./" : `.${route}/`, dist);
   await mkdir(folder, { recursive: true });
   await writeFile(new URL("index.html", folder), html);

@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
   choreographerSeo,
@@ -145,6 +146,7 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
   const isContact = path === "/lets-connect" || path === "/contact";
   const isCostumeDesign = path === "/costume-design";
   const isChoreographer = path === "/choreographer";
+  const isMusicEditing = path === "/music-editing";
   const pageNames = {
     "/": "Music Editing Studio in Jaipur",
     "/music-editing": "Professional Music Editing",
@@ -172,7 +174,11 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
     pagePublished && (Object.hasOwn(pageNames, path) || Object.hasOwn(landingPages, path) || Boolean(contentPage));
   const siteUrl = (import.meta.env.VITE_SITE_URL || "https://mrmusicmack.com").replace(/\/$/, "");
   const canonicalUrl = `${siteUrl}${path === "/" ? "" : path}`;
-  const socialImage = `${siteUrl}${choreographerHeroImage}`;
+  const socialImage = isChoreographer
+    ? `${siteUrl}${choreographerHeroImage}`
+    : isMusicEditing
+      ? `${siteUrl}/main-service-cards/music-editing.jpg`
+      : `${siteUrl}/logo.jpg`;
   const metaTitle = found
     ? (service?.seoTitle || seo?.title || `${pageName} | MR MUSIC MACK`)
     : "Page Not Found | MR MUSIC MACK";
@@ -215,77 +221,44 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
     : null;
   const schemaJson = JSON.stringify(schema);
 
-  useEffect(() => {
-    if (!found || !isChoreographer) return undefined;
-
-    document.head
-      .querySelectorAll('[data-page-seo="choreographer"]')
-      .forEach((element) => element.remove());
-    const tags = [
-      ["link", { rel: "canonical", href: canonicalUrl }],
-      ["meta", { name: "robots", content: "index, follow, max-image-preview:large" }],
-      ["meta", { property: "og:type", content: "website" }],
-      ["meta", { property: "og:title", content: metaTitle }],
-      ["meta", { property: "og:description", content: metaDescription }],
-      ["meta", { property: "og:url", content: canonicalUrl }],
-      ["meta", { property: "og:image", content: socialImage }],
-      ["meta", { property: "og:image:alt", content: "Wedding and sangeet choreography from the MR MUSIC MACK collection" }],
-      ["meta", { name: "twitter:card", content: "summary_large_image" }],
-      ["meta", { name: "twitter:title", content: metaTitle }],
-      ["meta", { name: "twitter:description", content: metaDescription }],
-      ["meta", { name: "twitter:image", content: socialImage }],
-      ["meta", { name: "keywords", content: seo?.keywords || "" }],
-    ].map(([tagName, attributes]) => {
-      const element = document.createElement(tagName);
-      Object.entries(attributes).forEach(([name, value]) => {
-        element.setAttribute(name, value);
-      });
-      element.dataset.pageSeo = "choreographer";
-      return element;
-    });
-    const schemaScript = document.createElement("script");
-    schemaScript.type = "application/ld+json";
-    schemaScript.dataset.pageSeo = "choreographer";
-    schemaScript.textContent = schemaJson;
-    tags.push(schemaScript);
-    tags.forEach((element) => document.head.append(element));
-
-    return () => tags.forEach((element) => element.remove());
-  }, [
-    canonicalUrl,
-    found,
-    isChoreographer,
-    metaDescription,
-    metaTitle,
-    schemaJson,
-    seo?.keywords,
-    socialImage,
-  ]);
-
   return (
     <>
-      <title>{metaTitle}</title>
-      <meta name="description" content={metaDescription} />
-      {found && !isChoreographer && <link rel="canonical" href={canonicalUrl} />}
-      {found && !isChoreographer && <meta name="robots" content="index, follow, max-image-preview:large" />}
-      {found && !isChoreographer && <meta property="og:type" content={isHome ? "website" : "article"} />}
-      {found && !isChoreographer && <meta property="og:title" content={metaTitle} />}
-      {found && !isChoreographer && <meta property="og:description" content={metaDescription} />}
-      {found && !isChoreographer && <meta property="og:url" content={canonicalUrl} />}
-      {found && !isChoreographer && <meta name="twitter:card" content="summary_large_image" />}
-      {found && !isChoreographer && <meta name="twitter:title" content={metaTitle} />}
-      {found && !isChoreographer && <meta name="twitter:description" content={metaDescription} />}
-      {found && !isChoreographer && (serviceSeo?.keywords?.length || seo?.keywords) && (
-        <meta
-          name="keywords"
-          content={serviceSeo?.keywords?.join(", ") || seo.keywords}
-        />
-      )}
-      {schema && !isChoreographer && (
-        <script type="application/ld+json">
-          {JSON.stringify(schema)}
-        </script>
-      )}
+      <Helmet prioritizeSeoTags>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        {found && <link rel="canonical" href={canonicalUrl} />}
+        {found && <meta name="robots" content="index, follow, max-image-preview:large" />}
+        {found && <meta property="og:type" content={isHome ? "website" : "article"} />}
+        {found && <meta property="og:title" content={metaTitle} />}
+        {found && <meta property="og:description" content={metaDescription} />}
+        {found && <meta property="og:url" content={canonicalUrl} />}
+        {found && <meta property="og:image" content={socialImage} />}
+        {found && (
+          <meta
+            property="og:image:alt"
+            content={
+              isChoreographer
+                ? "Wedding and sangeet choreography from the MR MUSIC MACK collection"
+                : `${pageName} at MR MUSIC MACK`
+            }
+          />
+        )}
+        {found && <meta name="twitter:card" content="summary_large_image" />}
+        {found && <meta name="twitter:title" content={metaTitle} />}
+        {found && <meta name="twitter:description" content={metaDescription} />}
+        {found && <meta name="twitter:image" content={socialImage} />}
+        {found && (serviceSeo?.keywords?.length || seo?.keywords) && (
+          <meta
+            name="keywords"
+            content={serviceSeo?.keywords?.join(", ") || seo.keywords}
+          />
+        )}
+        {schema && (
+          <script type="application/ld+json">
+            {schemaJson}
+          </script>
+        )}
+      </Helmet>
       <Suspense
         fallback={
           <div className="page-loading wrap" role="status">

@@ -1,13 +1,16 @@
 import { createRoot, hydrateRoot } from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 
 const root = document.getElementById("root");
 const app = (
-  <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
-    <App />
-  </BrowserRouter>
+  <HelmetProvider>
+    <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+      <App />
+    </BrowserRouter>
+  </HelmetProvider>
 );
 
 if (root.hasChildNodes() && !window.location.search) {
