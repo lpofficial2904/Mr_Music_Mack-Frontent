@@ -25,9 +25,9 @@ const curatedServiceImages = {
 
 const defaultServices = [
   { title: "Music Editing", label: "Cut. Mix. Perfect.", description: "Precision edits, seamless mashups and polished tracks made around your exact moment.", href: "/music-editing", ...curatedServiceImages["/music-editing"] },
-  { title: "Background Music", label: "Stories in sound", description: "Original scores shaped around the emotion, pace and purpose of your visual story.", href: "/background-music", ...curatedServiceImages["/background-music"] },
   { title: "Costume Design", label: "Designed to perform", description: "Distinctive costume concepts and styling created for your character, stage and occasion.", href: "/costume-design", ...curatedServiceImages["/costume-design"] },
   { title: "Choreographer", label: "Wedding & sangeet ready", description: "Professional choreography for wedding dances, sangeet performances, couple dance and family group routines.", href: "/choreographer", ...curatedServiceImages["/choreographer"] },
+  { title: "Background Music", label: "Stories in sound", description: "Original scores shaped around the emotion, pace and purpose of your visual story.", href: "/background-music", ...curatedServiceImages["/background-music"] },
 ];
 
 export default function MainServiceCards({ siteContent }) {

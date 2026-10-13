@@ -147,6 +147,14 @@ function getInstagramEmbedUrl(url) {
   return `https://www.instagram.com/reel/${reelMatch[1]}/embed/`;
 }
 
+function getInstagramEmbedSrc(url, active) {
+  if (!url) return "";
+  const embedUrl = new URL(url);
+  embedUrl.searchParams.set("hidecaption", "1");
+  if (active) embedUrl.searchParams.set("autoplay", "1");
+  return embedUrl.toString();
+}
+
 const instagramProjects = [
   {
     title: "Reel Link Sheet",
@@ -198,6 +206,11 @@ const instagramProjects = [
     href: "https://www.instagram.com/reel/DKwzEjpvWV8/?stkn=MTM1cmNqeDRzZjZzZQ==",
   },
 ];
+
+const defaultInstagramReelKey = (() => {
+  const index = instagramProjects.findIndex((project) => getInstagramEmbedUrl(project.href));
+  return index >= 0 ? `${instagramProjects[index].title}-${index}` : "";
+})();
 
 const collectionVideoCategories = [
   {
@@ -292,6 +305,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
   const [projectFilter, setProjectFilter] = useState("All");
   const [activeProject, setActiveProject] = useState(null);
   const [activeYoutubeVideo, setActiveYoutubeVideo] = useState(null);
+  const [activeInstagramReel, setActiveInstagramReel] = useState(defaultInstagramReelKey);
   const [instagramEmbedsEnabled, setInstagramEmbedsEnabled] = useState(true);
   const [instagramResetKey, setInstagramResetKey] = useState(0);
   const [activeCollectionVideos, setActiveCollectionVideos] = useState(() =>
@@ -330,6 +344,21 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
   function stopPlayback() {
     activeAudio.current?.pause();
     activeAudio.current = null;
+    setActiveYoutubeVideo(null);
+    setActiveInstagramReel("");
+    setAudibleCollectionVideo("");
+    collectionVideoPlayers.current.forEach((player) => player.pause());
+  }
+
+  function playInstagramReel(cardKey) {
+    activeAudio.current?.pause();
+    activeAudio.current = null;
+    setActiveYoutubeVideo(null);
+    setAudibleCollectionVideo("");
+    collectionVideoPlayers.current.forEach((player) => player.pause());
+    setInstagramEmbedsEnabled(true);
+    setInstagramResetKey((value) => value + 1);
+    setActiveInstagramReel(cardKey);
   }
 
   useEffect(() => {
@@ -379,6 +408,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
 
       if (!isVisible) {
         setInstagramEmbedsEnabled(false);
+        setActiveInstagramReel("");
         setInstagramResetKey((value) => value + 1);
         return;
       }
@@ -388,6 +418,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     const resetInstagramOnHiddenTab = () => {
       if (document.hidden) {
         setInstagramEmbedsEnabled(false);
+        setActiveInstagramReel("");
         setInstagramResetKey((value) => value + 1);
       } else {
         resetInstagramWhenHidden();
@@ -523,30 +554,37 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     if (!collectionPage) return;
 
     collectionVideoPlayers.current.forEach((player, key) => {
-      const [categoryId, rawIndex] = key.split("::");
-      const shouldPlay =
-        visibleVideoCategories.has(categoryId) &&
-        Number(rawIndex) === (activeCollectionVideos[categoryId] || 0);
+      const shouldPlay = key === audibleCollectionVideo;
 
       if (!shouldPlay) {
         player.pause();
+        player.muted = true;
+        player.volume = 0;
         return;
       }
 
-      player.muted = key !== audibleCollectionVideo;
-      player.volume = key === audibleCollectionVideo ? 1 : 0;
+      setActiveYoutubeVideo(null);
+      setActiveInstagramReel("");
+      activeAudio.current?.pause();
+      player.muted = false;
+      player.volume = 1;
       player.currentTime = player.currentTime || 0;
       player.play().catch(() => {});
     });
-  }, [activeCollectionVideos, audibleCollectionVideo, collectionPage, visibleVideoCategories]);
+  }, [audibleCollectionVideo, collectionPage]);
 
   useEffect(() => {
     if (!collectionPage) return;
     visibleVideoCategories.forEach((categoryId) => {
-      collectionVideoCards.current.get(getCollectionVideoKey(categoryId, activeCollectionVideos[categoryId] || 0))?.scrollIntoView({
+      const card = collectionVideoCards.current.get(
+        getCollectionVideoKey(categoryId, activeCollectionVideos[categoryId] || 0),
+      );
+      const track = card?.parentElement;
+      if (!card || !track) return;
+
+      track.scrollTo({
+        left: card.offsetLeft - (track.clientWidth - card.clientWidth) / 2,
         behavior: "smooth",
-        block: "nearest",
-        inline: "center",
       });
     });
   }, [activeCollectionVideos, collectionPage, visibleVideoCategories]);
@@ -643,6 +681,16 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     const playerKey = getCollectionVideoKey(categoryId, index);
     setCollectionVideoIndex(categoryId, index);
     setAudibleCollectionVideo(playerKey);
+    setActiveYoutubeVideo(null);
+    setActiveInstagramReel("");
+    activeAudio.current?.pause();
+    collectionVideoPlayers.current.forEach((player, key) => {
+      if (key !== playerKey) {
+        player.pause();
+        player.muted = true;
+        player.volume = 0;
+      }
+    });
 
     const player = collectionVideoPlayers.current.get(playerKey);
     if (!player) return;
@@ -698,7 +746,14 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
                   src={`/collection-videos/${filename}`}
                   muted={audibleCollectionVideo !== playerKey}
                   playsInline
-                  loop={audibleCollectionVideo !== playerKey}
+                  loop={false}
+                  onPlay={() => {
+                    if (audibleCollectionVideo !== playerKey)
+                      playCollectionVideoWithSound(categoryData.id, index);
+                  }}
+                  onPause={() => {
+                    setAudibleCollectionVideo((current) => current === playerKey ? "" : current);
+                  }}
                   onEnded={() => {
                     if (audibleCollectionVideo === playerKey) setAudibleCollectionVideo("");
                   }}
@@ -768,10 +823,11 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
           .filter((project) => project.embedUrl)
           .map((project, index) => {
           const cardKey = `${project.title}-${index}`;
+          const isActive = activeInstagramReel === cardKey;
 
           return (
           <m.article
-            className="media-reel-card"
+            className={`media-reel-card instagram-inline-reel${isActive ? " is-active" : ""}`}
             key={cardKey}
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -781,14 +837,25 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
             {instagramEmbedsEnabled && (
               <iframe
                 title={`${project.title} Instagram reel`}
-                key={`${cardKey}-${instagramResetKey}`}
-                src={project.embedUrl}
+                key={`${cardKey}-${instagramResetKey}-${isActive ? "active" : "idle"}`}
+                src={getInstagramEmbedSrc(project.embedUrl, isActive)}
                 loading="lazy"
                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
             )}
+            <button
+              className="media-play-button"
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                playInstagramReel(cardKey);
+              }}
+              aria-label={`Play ${project.title} Instagram reel`}
+            >
+              {isActive ? "Playing" : "Play"}
+            </button>
             <b>{project.platform || "Instagram"}</b>
             <span>{project.title}</span>
           </m.article>
@@ -833,6 +900,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
               className="media-play-button"
               type="button"
               onClick={() => {
+                stopPlayback();
                 setInstagramResetKey((value) => value + 1);
                 setActiveYoutubeVideo(video.id);
               }}
@@ -1184,6 +1252,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
                 className="media-play-button"
                 type="button"
                 onClick={() => {
+                  stopPlayback();
                   setInstagramResetKey((value) => value + 1);
                   setActiveYoutubeVideo(video.id);
                 }}
@@ -1204,10 +1273,11 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
             .filter((project) => project.embedUrl)
             .map((project, index) => {
             const cardKey = `${project.title}-${index}`;
+            const isActive = activeInstagramReel === cardKey;
 
             return (
             <m.article
-              className="media-reel-card"
+              className={`media-reel-card instagram-inline-reel${isActive ? " is-active" : ""}`}
               key={cardKey}
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1217,14 +1287,25 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
               {instagramEmbedsEnabled && (
                 <iframe
                   title={`${project.title} Instagram reel`}
-                  key={`${cardKey}-${instagramResetKey}`}
-                  src={project.embedUrl}
+                  key={`${cardKey}-${instagramResetKey}-${isActive ? "active" : "idle"}`}
+                  src={getInstagramEmbedSrc(project.embedUrl, isActive)}
                   loading="lazy"
                   allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
                 />
               )}
+              <button
+                className="media-play-button"
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  playInstagramReel(cardKey);
+                }}
+                aria-label={`Play ${project.title} Instagram reel`}
+              >
+                {isActive ? "Playing" : "Play"}
+              </button>
               <b>{project.platform || "Instagram"}</b>
               <span>{project.title}</span>
             </m.article>

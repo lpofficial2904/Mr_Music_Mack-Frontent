@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import OurWork from "../components/OurWork";
 import { Link } from "react-router-dom";
 import { m } from "framer-motion";
@@ -306,6 +306,27 @@ const choreographyProjects = [
 
 function ChoreographerSeoSections() {
   const [playingVideo, setPlayingVideo] = useState(null);
+  const videoRefs = useRef(new Map());
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, id) => {
+      if (id !== playingVideo) {
+        video.pause();
+        video.currentTime = 0;
+        return;
+      }
+
+      video.muted = false;
+      video.play().catch(() => setPlayingVideo(null));
+    });
+  }, [playingVideo]);
+
+  useEffect(() => {
+    const players = videoRefs.current;
+    return () => {
+      players.forEach((video) => video.pause());
+    };
+  }, []);
 
   return (
     <>
@@ -374,14 +395,24 @@ function ChoreographerSeoSections() {
                     Play video
                   </button>
                   <video
+                    ref={(node) => {
+                      if (node) videoRefs.current.set(project.id, node);
+                      else videoRefs.current.delete(project.id);
+                    }}
                     className={isPlaying ? "is-playing" : ""}
                     controls={isPlaying}
-                    autoPlay={isPlaying}
                     playsInline
                     preload="none"
                     poster={project.poster || choreographerFeatureImage}
                     aria-label={`${project.title} — ${project.category} choreography video`}
                     tabIndex={isPlaying ? 0 : -1}
+                    onPlay={() => setPlayingVideo(project.id)}
+                    onPause={() => {
+                      setPlayingVideo((current) => current === project.id ? null : current);
+                    }}
+                    onEnded={() => {
+                      setPlayingVideo((current) => current === project.id ? null : current);
+                    }}
                   >
                     <source
                       src={`/collection-videos/${project.filename}`}
