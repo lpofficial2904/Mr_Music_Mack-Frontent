@@ -248,10 +248,42 @@ export default function ProjectBriefModal({
         success: true,
         text: `Your requirement has been sent to us on WhatsApp and email. Reference: ${result.reference}.`,
       });
-      toast.success("Requirement sent. Returning to the home page in 3 seconds.", {
-        id: "project-brief",
-        duration: 3000,
-      });
+      toast.custom(
+        (toastState) => (
+          <section
+            className="booking-toast"
+            data-visible={toastState.visible}
+            role="status"
+            aria-live="polite"
+          >
+            <span className="booking-toast-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="m6.5 12.5 3.7 3.7 7.8-8" />
+              </svg>
+            </span>
+            <div className="booking-toast-copy">
+              <p className="booking-toast-eyebrow">
+                {fields.projectType || type} booking enquiry
+              </p>
+              <h2>Your project is in motion.</h2>
+              <p className="booking-toast-description">
+                Thanks, {String(fields.name || "there").trim()}. Our studio team
+                will review your brief and contact you about next steps.
+              </p>
+              {result.reference && (
+                <p className="booking-toast-reference">
+                  Request reference <strong>{result.reference}</strong>
+                </p>
+              )}
+              <p className="booking-toast-redirect">
+                Returning to the home page in 3 seconds
+              </p>
+            </div>
+            <span className="booking-toast-timer" aria-hidden="true" />
+          </section>
+        ),
+        { id: "project-brief", duration: 3000 },
+      );
       if (onSubmitted) {
         onSubmitted();
       } else {

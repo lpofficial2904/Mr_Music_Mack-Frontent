@@ -12841,3 +12841,140 @@ body:has(.reference-hero) .site-navbar-actions .nav-cta {
 }
 @media (hover: none) { .collection-card-play button, .collection-card-play a { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .collection-managed-carousel .collection-local-video-track { scroll-behavior: auto; } }
+
+.booking-toast {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 15px;
+  width: min(440px, calc(100vw - 32px));
+  overflow: hidden;
+  padding: 22px 24px 25px;
+  color: #f6f2e9;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(206, 165, 74, 0.2), transparent 46%),
+    linear-gradient(145deg, #151e28, #0b1016 78%);
+  border: 1px solid rgba(220, 180, 87, 0.58);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transform: translateY(-14px) scale(0.97);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.booking-toast[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.booking-toast-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: #10151b;
+  background: linear-gradient(145deg, #f3d88e, #c69a3c);
+  border: 1px solid rgba(255, 239, 194, 0.7);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(208, 165, 69, 0.26);
+}
+
+.booking-toast-mark svg {
+  width: 25px;
+  height: 25px;
+}
+
+.booking-toast-mark path {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.booking-toast-copy { min-width: 0; }
+
+.booking-toast-eyebrow {
+  margin: 1px 0 7px;
+  color: #e3c36f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.booking-toast-copy h2 {
+  margin: 0;
+  color: #fffaf0;
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.booking-toast-description {
+  margin: 8px 0 0;
+  color: #c1cad4;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.booking-toast-reference {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 13px 0 0;
+  padding-top: 11px;
+  color: #aeb8c4;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+}
+
+.booking-toast-reference strong {
+  color: #f4dc9a;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.booking-toast-redirect {
+  margin: 13px 0 0;
+  color: #97a2af;
+  font-size: 11px;
+}
+
+.booking-toast-timer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f1d78f, #c99d45);
+  transform-origin: left;
+  animation: booking-toast-countdown 3s linear forwards;
+}
+
+@keyframes booking-toast-countdown {
+  to { transform: scaleX(0); }
+}
+
+@media (max-width: 480px) {
+  .booking-toast {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    padding: 18px 17px 22px;
+    border-radius: 17px;
+  }
+
+  .booking-toast-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+  }
+
+  .booking-toast-copy h2 { font-size: 17px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-toast { transition: none; }
+  .booking-toast-timer { animation: none; }
+}
