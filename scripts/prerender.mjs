@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { render } from "../.prerender/entry-server.js";
 import { landingPages } from "../src/siteData.js";
+import { policyPages } from "../src/policyPages.js";
 
 const routes = [...new Set([
   "/",
@@ -15,6 +16,7 @@ const routes = [...new Set([
   "/about",
   "/contact",
   ...Object.keys(landingPages),
+  ...Object.keys(policyPages),
 ])];
 const dist = new URL("../dist/", import.meta.url);
 const template = await readFile(new URL("index.html", dist), "utf8");

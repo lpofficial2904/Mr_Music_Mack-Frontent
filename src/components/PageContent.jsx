@@ -10,12 +10,14 @@ import {
 import ProjectCTA from "./ProjectCTA";
 import ServiceGallery from "./ServiceGallery";
 import ManagedPageMedia from "./ManagedPageMedia";
+import { policyPages } from "../policyPages";
 
 const choreographerHeroImage = "/costume-gallery/costume-wedding-sangeet-performance.jpg";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const ServicePage = lazy(() => import("../pages/ServicePage"));
 const ContactPage = lazy(() => import("../pages/ContactPage"));
+const PolicyPage = lazy(() => import("../pages/PolicyPage"));
 
 const seoByPath = {
   "/": {
@@ -136,6 +138,7 @@ const seoByPath = {
 };
 
 export default function PageContent({ path, query, onStart: startProject, siteContent }) {
+  const policy = policyPages[path];
   const contentPage = siteContent?.pages?.[path];
   const service = contentPage
     ? { ...landingPages[path], ...contentPage }
@@ -162,8 +165,8 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
     "/lets-connect": "Let’s Connect",
     "/contact": "Start Your Project",
   };
-  const pageName = service?.name || pageNames[path] || "Page Not Found";
-  const seo = seoByPath[path];
+  const pageName = policy?.title || service?.name || pageNames[path] || "Page Not Found";
+  const seo = policy ? { title: `${policy.title} | MR MUSIC MACK`, description: policy.description } : seoByPath[path];
   const serviceSeo = serviceSeoContent[path];
   const pageDescription = isHome
     ? service?.description || seo?.description || "Jaipur-based music editing studio serving clients across India. Wedding and sangeet mashups, dance performance tracks, DJ remixes, background music and mix & mastering."
@@ -172,7 +175,7 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
       "MR MUSIC MACK: music audio editing, mashups, DJ remixes, mix & mastering and custom performance tracks for weddings, events, schools and colleges in Jaipur.";
 
   const found =
-    pagePublished && (Object.hasOwn(pageNames, path) || Object.hasOwn(landingPages, path) || Boolean(contentPage));
+    pagePublished && (Boolean(policy) || Object.hasOwn(pageNames, path) || Object.hasOwn(landingPages, path) || Boolean(contentPage));
   const siteUrl = (import.meta.env.VITE_SITE_URL || "https://mrmusicmack.com").replace(/\/$/, "");
   const canonicalUrl = `${siteUrl}${path === "/" ? "" : path}`;
   const socialImage = isChoreographer
@@ -186,7 +189,9 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
   const metaDescription = found
     ? (service?.seoDescription || seo?.description || pageDescription)
     : "This page is not available.";
-  const schema = found && isChoreographer
+  const schema = found && policy
+    ? { "@context": "https://schema.org", "@type": "WebPage", name: pageName, description: metaDescription, url: canonicalUrl }
+    : found && isChoreographer
     ? createChoreographerSchema(siteUrl, metaDescription)
     : found
     ? {
@@ -228,7 +233,7 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
         {found && <link rel="canonical" href={canonicalUrl} />}
-        {found && <meta name="robots" content="index, follow, max-image-preview:large" />}
+        {found && <meta name="robots" content={policy?.pending ? "noindex, follow" : "index, follow, max-image-preview:large"} />}
         {found && <meta property="og:type" content={isHome ? "website" : "article"} />}
         {found && <meta property="og:title" content={metaTitle} />}
         {found && <meta property="og:description" content={metaDescription} />}
@@ -274,6 +279,8 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
             <p>Let's get you back to the music.</p>
             <Link className="button primary" to="/">Back to home ↗</Link>
           </section>
+        ) : policy ? (
+          <PolicyPage path={path} />
         ) : isHome ? (
           <HomePage onStart={startProject} siteContent={siteContent} />
         ) : isContact ? (
@@ -289,9 +296,9 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
         )}
       </Suspense>
 
-      {found && !isHome && !isCollection && <ManagedPageMedia page={contentPage} excludeAudio={isMusicEditing || path === "/background-music" || Boolean(landingPages[path] && path !== "/choreographer" && path !== "/costume-design")} />}
+      {found && !policy && !isHome && !isCollection && <ManagedPageMedia page={contentPage} excludeAudio={isMusicEditing || path === "/background-music" || Boolean(landingPages[path] && path !== "/choreographer" && path !== "/costume-design")} />}
 
-      {found && !isStudio && !isCollection && (
+      {found && !policy && !isStudio && !isCollection && (
         <ProjectCTA
           onStart={startProject}
           type={isCostumeDesign ? "Costume Design" : isChoreographer ? "Choreographer" : "Music Editing"}

@@ -12978,3 +12978,6 @@ body:has(.reference-hero) .site-navbar-actions .nav-cta {
   .booking-toast { transition: none; }
   .booking-toast-timer { animation: none; }
 }
+
+.footer-policy-links { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 22px 0; }
+.footer-policy-links a { font-size: 14px; }

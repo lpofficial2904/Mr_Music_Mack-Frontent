@@ -1,0 +1,10 @@
+.policy-page { max-width: 960px; padding-top: clamp(48px, 8vw, 100px); padding-bottom: 72px; }
+.policy-header { padding-bottom: 28px; border-bottom: 1px solid rgba(255, 255, 255, .14); }
+.policy-header h1 { margin: 10px 0 0; font-size: clamp(32px, 6vw, 56px); line-height: 1.15; }
+.policy-copy { color: #c6cbd3; line-height: 1.85; overflow-wrap: anywhere; }
+.policy-copy h2 { margin: 36px 0 12px; color: #fff; font-size: clamp(20px, 3vw, 25px); line-height: 1.4; }
+.policy-copy p { margin: 16px 0; }
+.policy-copy .policy-date { color: var(--brand-gold, #d7b66c); margin: 24px 0 32px; }
+.policy-copy a, .policy-navigation a { color: var(--brand-gold, #d7b66c); text-decoration: underline; text-underline-offset: 4px; }
+.policy-navigation { display: flex; flex-wrap: wrap; gap: 16px 28px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .14); }
+.policy-navigation a[aria-current="page"] { color: #fff; }

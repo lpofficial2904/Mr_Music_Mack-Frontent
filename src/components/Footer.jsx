@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { mediaUrl } from "../api";
 import { StudioIcon, WhatsAppIcon } from "./Icons";
+import { policyPages } from "../policyPages";
 
 export default function Footer({ siteContent }) {
   const settings = siteContent?.settings;
@@ -89,6 +90,9 @@ export default function Footer({ siteContent }) {
             </div>
           </div>
         </div>
+        <nav className="footer-policy-links" aria-label="Legal policies">
+          {Object.entries(policyPages).map(([path, page]) => <Link key={path} to={path}>{page.title}</Link>)}
+        </nav>
         <div className="footer-bottom">
           <span>
             © {new Date().getFullYear()} MR MUSIC MACK. All rights reserved.
