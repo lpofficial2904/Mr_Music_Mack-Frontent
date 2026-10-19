@@ -1,5 +1,5 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import PageContent from "./PageContent";
@@ -11,10 +11,17 @@ const ProjectBriefModal = lazy(() => import("./ProjectBriefModal"));
 
 export default function SiteLayout() {
   const { pathname, search } = useLocation();
+  const navigate = useNavigate();
   const path = pathname.replace(/\/$/, "") || "/";
   const query = new URLSearchParams(search);
   const [brief, setBrief] = useState(null);
   const [siteContent, setSiteContent] = useState(null);
+  const briefRedirectTimer = useRef(null);
+
+  useEffect(
+    () => () => window.clearTimeout(briefRedirectTimer.current),
+    [],
+  );
 
   const loadSiteContent = useCallback(async ({ signal } = {}) => {
     const response = await fetch(apiUrl("/api/site-content"), {
@@ -82,6 +89,15 @@ export default function SiteLayout() {
     setBrief({ type, mood, need });
   }
 
+  function handleBriefSubmitted() {
+    setBrief(null);
+    window.clearTimeout(briefRedirectTimer.current);
+    briefRedirectTimer.current = window.setTimeout(
+      () => navigate("/"),
+      3000,
+    );
+  }
+
   function startPageProject() {
     const isCostumeDesign = path === "/costume-design";
     const isChoreographer = path === "/choreographer";
@@ -139,6 +155,7 @@ export default function SiteLayout() {
             initialType={brief.type}
             initialMood={brief.mood}
             initialNeed={brief.need}
+            onSubmitted={handleBriefSubmitted}
           />
         )}
       </Suspense>

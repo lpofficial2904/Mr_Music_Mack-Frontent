@@ -1,4 +1,6 @@
 ﻿import { useEffect, useId, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { apiUrl, hasApiBackend } from "../api";
 import { projectTypes, requirements } from "../siteData";
 import { WhatsAppIcon } from "./Icons";
@@ -110,12 +112,15 @@ const briefProfiles = {
 export default function ProjectBriefModal({
   isOpen = false,
   onClose,
+  onSubmitted,
   inline = false,
   initialType = "Music Editing",
   initialNeed = "",
 }) {
   const dialog = useRef(null);
   const form = useRef(null);
+  const redirectTimer = useRef(null);
+  const navigate = useNavigate();
   const headingId = useId();
   const [type, setType] = useState(
     projectTypes.includes(initialType) ? initialType : "Music Editing",
@@ -153,6 +158,11 @@ export default function ProjectBriefModal({
     };
   }, [isOpen, inline]);
 
+  useEffect(
+    () => () => window.clearTimeout(redirectTimer.current),
+    [],
+  );
+
   function readBrief() {
     const data = new FormData(form.current);
     const file = data.get("referenceFile");
@@ -186,6 +196,8 @@ export default function ProjectBriefModal({
     if (busy) return;
     setBusy(true);
     setStatus(null);
+    window.clearTimeout(redirectTimer.current);
+    toast.loading("Sending your project requirement…", { id: "project-brief" });
     try {
       const { fields, file } = readBrief();
       if (!validateBrief(fields, file)) {
@@ -193,6 +205,9 @@ export default function ProjectBriefModal({
         setStatus({
           success: false,
           text: "Please fix the highlighted fields before submitting.",
+        });
+        toast.error("Please fix the highlighted fields before submitting.", {
+          id: "project-brief",
         });
         return;
       }
@@ -233,14 +248,25 @@ export default function ProjectBriefModal({
         success: true,
         text: `Your requirement has been sent to us on WhatsApp and email. Reference: ${result.reference}.`,
       });
+      toast.success("Requirement sent. Returning to the home page in 3 seconds.", {
+        id: "project-brief",
+        duration: 3000,
+      });
+      if (onSubmitted) {
+        onSubmitted();
+      } else {
+        redirectTimer.current = window.setTimeout(() => navigate("/"), 3000);
+      }
     } catch (error) {
+      const message =
+        error.message === "Failed to fetch"
+          ? "Could not connect. Please try again or continue on WhatsApp with your details."
+          : error.message;
       setStatus({
         success: false,
-        text:
-          error.message === "Failed to fetch"
-            ? "Could not connect. Please try again or continue on WhatsApp with your details."
-            : error.message,
+        text: message,
       });
+      toast.error(message, { id: "project-brief" });
     } finally {
       setBusy(false);
     }
@@ -253,6 +279,7 @@ export default function ProjectBriefModal({
         success: false,
         text: "Please fix the highlighted fields before opening WhatsApp.",
       });
+      toast.error("Please fix the highlighted fields before opening WhatsApp.");
       return;
     }
     const labels = {
@@ -283,6 +310,9 @@ export default function ProjectBriefModal({
       text: file
         ? "WhatsApp opened with your brief. Attach your selected file there and press Send to share it."
         : "WhatsApp opened with your brief. Press Send there to share your requirement.",
+    });
+    toast("WhatsApp draft opened. Press Send there to submit your requirement.", {
+      icon: "↗",
     });
   }
 

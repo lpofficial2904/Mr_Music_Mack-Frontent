@@ -1,6 +1,7 @@
 ﻿import { memo, useEffect, useRef, useState } from "react";
 
 import { mediaUrl } from "../api";
+import toast from "react-hot-toast";
 
 const formatTime = (seconds) => {
   if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
@@ -40,18 +41,34 @@ export default memo(function AudioPlayer({ id, src, title, duration, onActivate 
     onActivate?.(player);
     try { await player.play(); }
     catch (reason) {
-      if (reason.name !== "AbortError") setError("This sample could not play. Please try again.");
+      if (reason.name !== "AbortError") {
+        const message = "This sample could not play. Please try again.";
+        setError(message);
+        toast.error(message, { id: `audio-${title}` });
+      }
     }
+  }
+
+  function showAudioError() {
+    const message = "This audio sample is currently unavailable.";
+    setError(message);
+    toast.error(message, { id: `audio-${title}` });
   }
 
   return (
     <>
       <audio ref={audio} src={source} preload="metadata"
         onLoadedMetadata={readDuration} onDurationChange={readDuration}
-        onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+        onPlay={() => {
+          setPlaying(true);
+          toast.success(`${title} is playing.`, {
+            id: `audio-playing-${title}`,
+            duration: 1400,
+          });
+        }} onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
         onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
-        onError={() => setError("This audio sample is currently unavailable.")} />
+        onError={showAudioError} />
       <div className="audio-player" data-playing={playing}>
         <button className="audio-toggle" type="button"
           aria-label={`${playing ? "Pause" : "Play"} ${title}`} aria-pressed={playing} onClick={toggle}>
