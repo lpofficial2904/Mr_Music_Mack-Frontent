@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { mediaUrl } from "../api";
 import { StudioIcon, WhatsAppIcon } from "./Icons";
 
 export default function Footer({ siteContent }) {
@@ -14,7 +15,7 @@ export default function Footer({ siteContent }) {
             <Link to="/" className="brand">
               <img
                 className="brand-logo"
-                src={settings?.logo || "/brand-logo.svg"}
+                src={mediaUrl(settings?.logo) || "/brand-logo.svg"}
                 alt=""
                 width="76"
                 height="56"

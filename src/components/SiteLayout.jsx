@@ -16,6 +16,7 @@ export default function SiteLayout() {
   const query = new URLSearchParams(search);
   const [brief, setBrief] = useState(null);
   const [siteContent, setSiteContent] = useState(null);
+  const contentSnapshot = useRef("");
   const briefRedirectTimer = useRef(null);
 
   useEffect(
@@ -31,7 +32,12 @@ export default function SiteLayout() {
     if (!response.ok)
       throw new Error(`Website content request failed (${response.status}).`);
     const content = await response.json();
-    setSiteContent(content);
+    const snapshot = JSON.stringify(content);
+    // Unchanged fallback responses must not reset active media and page controls.
+    if (snapshot !== contentSnapshot.current) {
+      contentSnapshot.current = snapshot;
+      setSiteContent(content);
+    }
   }, []);
 
   useEffect(() => {

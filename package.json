@@ -7,7 +7,7 @@
     "dev": "node scripts/dev.mjs",
     "build": "vite build && vite build --ssr src/entry-server.jsx --outDir .prerender && node scripts/prerender.mjs",
     "generate:demos": "node scripts/generate-demos.mjs",
-    "test": "node scripts/verify-build.mjs",
+    "test": "node scripts/verify-build.mjs && node scripts/verify-live-content.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "format": "prettier --write src scripts index.html vite.config.js"

@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { mediaUrl } from "../api";
 import { editingServices } from "../siteData";
 import { WhatsAppIcon } from "./Icons";
 
@@ -112,7 +113,7 @@ export default function Navbar({ onStart, path, siteContent }) {
       <div className="site-navbar-bar navbar">
         <Link to="/" className="site-navbar-brand brand" aria-label="MR Music Mack home">
           <span className="brand-mark">
-            <img className="brand-logo" src={settings?.logo || "/brand-logo.svg"} alt="" width="76" height="56" />
+            <img className="brand-logo" src={mediaUrl(settings?.logo) || "/brand-logo.svg"} alt="" width="76" height="56" />
           </span>
           <span>
             {settings?.brandName || "MR MUSIC MACK"}<small>{settings?.tagline || "EDITING & AUDIO STUDIO"}</small>
@@ -220,7 +221,7 @@ export default function Navbar({ onStart, path, siteContent }) {
               <div className="mobile-nav-top">
                 <MotionLink to="/" className="brand" aria-label="MR Music Mack home" variants={drawerItemVariants}>
                   <span className="brand-mark">
-                    <img className="brand-logo" src={settings?.logo || "/brand-logo.svg"} alt="" width="76" height="56" />
+                    <img className="brand-logo" src={mediaUrl(settings?.logo) || "/brand-logo.svg"} alt="" width="76" height="56" />
                   </span>
                   <span>{settings?.brandName || "MR MUSIC MACK"}<small>{settings?.tagline || "EDITING & AUDIO STUDIO"}</small></span>
                 </MotionLink>

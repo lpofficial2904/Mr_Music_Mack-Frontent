@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { mediaUrl } from "../api";
 import { m, useReducedMotion } from "framer-motion";
 import fallbackImage from "../assets/studio-services.png";
 
@@ -62,7 +63,7 @@ export default function MainServiceCards({ siteContent }) {
             transition={{ duration: reduceMotion ? 0 : 0.58, delay: reduceMotion ? 0 : (index % 2) * 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
             <img
-              src={service.image}
+              src={mediaUrl(service.image)}
               alt={service.imageAlt}
               width="1200"
               height="675"

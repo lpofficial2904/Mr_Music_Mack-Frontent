@@ -1126,6 +1126,15 @@ export default function OurWork({
 
         {renderManagedCollectionMedia()}
 
+        {musicSamples.length > 0 && <section className="collection-section" aria-labelledby="collection-listening-title">
+          <div className="collection-section-heading">
+            <p className="eyebrow">{audioSection?.eyebrow || "THE LISTENING ROOM"}</p>
+            <h2 id="collection-listening-title">{audioSection?.title || "Hear the work."}</h2>
+            <p>{audioSection?.description || "Listen to selected edits and studio previews."}</p>
+          </div>
+          <div className="collection-music-sample-grid">{musicSamples.map(renderMusicSampleCard)}</div>
+        </section>}
+
         {!Array.isArray(managedMedia) && collectionVideoCategories.map((categoryData, index) =>
           renderCollectionVideoSlider(categoryData, index),
         )}

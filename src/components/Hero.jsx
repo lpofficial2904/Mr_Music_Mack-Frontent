@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { mediaUrl } from "../api";
 import { motion, useReducedMotion } from "framer-motion";
 import { StudioIcon, WhatsAppIcon } from "./Icons";
 import premiumStudioHero from "../assets/hero-studio-background-branded.jpg";
@@ -156,7 +157,7 @@ export default function Hero({ onStart, siteContent }) {
   return (
     <section className="reference-hero frequency-hero" id="home">
       <div className="reference-hero-media" aria-hidden="true">
-        <img src={home?.heroBackground || premiumStudioHero} alt="" />
+        <img src={mediaUrl(home?.heroBackground) || premiumStudioHero} alt="" />
       </div>
       <div className="reference-hero-scrim" aria-hidden="true" />
       <div className="reference-soundwaves" aria-hidden="true">
@@ -329,7 +330,7 @@ export default function Hero({ onStart, siteContent }) {
 
           <div className="reference-showcase" aria-label="Preview gallery">
             <div className="reference-showcase-photo">
-              <img className="reference-mobile-showcase-image" src={home?.showcaseBackground || mobileCardBackground} alt="" />
+              <img className="reference-mobile-showcase-image" src={mediaUrl(home?.showcaseBackground) || mobileCardBackground} alt="" />
             </div>
 
             <motion.div
@@ -378,8 +379,8 @@ export default function Hero({ onStart, siteContent }) {
                   <div className="reference-video-thumb">
                     {video ? (
                       <video
-                        src={video}
-                        poster={image}
+                        src={mediaUrl(video)}
+                        poster={mediaUrl(image)}
                         muted
                         loop
                         autoPlay
@@ -388,7 +389,7 @@ export default function Hero({ onStart, siteContent }) {
                         aria-hidden="true"
                       />
                     ) : (
-                      <img src={image} alt="" loading="lazy" decoding="async" />
+                      <img src={mediaUrl(image)} alt="" loading="lazy" decoding="async" />
                     )}
                   </div>
                   <motion.span
