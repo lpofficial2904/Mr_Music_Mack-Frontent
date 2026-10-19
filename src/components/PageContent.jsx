@@ -9,6 +9,7 @@ import {
 } from "../siteData";
 import ProjectCTA from "./ProjectCTA";
 import ServiceGallery from "./ServiceGallery";
+import ManagedPageMedia from "./ManagedPageMedia";
 
 const choreographerHeroImage = "/costume-gallery/costume-wedding-sangeet-performance.jpg";
 
@@ -254,7 +255,7 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
           />
         )}
         {schema && (
-          <script type="application/ld+json">
+          <script type="application/ld+json" data-page-seo={isChoreographer ? "choreographer" : undefined}>
             {schemaJson}
           </script>
         )}
@@ -288,6 +289,8 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
         )}
       </Suspense>
 
+      {found && !isHome && !isCollection && <ManagedPageMedia page={contentPage} excludeAudio={isMusicEditing || path === "/background-music" || Boolean(landingPages[path] && path !== "/choreographer" && path !== "/costume-design")} />}
+
       {found && !isStudio && !isCollection && (
         <ProjectCTA
           onStart={startProject}
@@ -295,7 +298,7 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
           need={isCostumeDesign ? "Costume Design" : isChoreographer ? "Choreography" : ""}
         />
       )}
-      {found && isHome && siteContent?.home?.sections?.serviceGallery !== false && <ServiceGallery />}
+      {found && isHome && siteContent?.home?.sections?.serviceGallery !== false && <ServiceGallery siteContent={siteContent} />}
     </>
   );
 }

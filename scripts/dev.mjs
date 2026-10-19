@@ -23,7 +23,7 @@ const processes = [];
 if (await isBackendRunning()) {
   console.log(`MR MUSIC MACK API already running: http://${backendHost}:${backendPort}`);
 } else {
-  processes.push(spawn(process.execPath, ["server.js"], {
+  processes.push(spawn(process.execPath, ["--watch", "--watch-preserve-output", "server.js"], {
     cwd: backendRoot,
     env: { ...process.env, HOST: backendHost, PORT: backendPort },
     stdio: "inherit",

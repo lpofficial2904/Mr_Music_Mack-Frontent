@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
@@ -16,26 +16,58 @@ export default function SiteLayout() {
   const [brief, setBrief] = useState(null);
   const [siteContent, setSiteContent] = useState(null);
 
+  const loadSiteContent = useCallback(async ({ signal } = {}) => {
+    const response = await fetch(apiUrl("/api/site-content"), {
+      cache: "no-store",
+      signal,
+    });
+    if (!response.ok)
+      throw new Error(`Website content request failed (${response.status}).`);
+    const content = await response.json();
+    setSiteContent(content);
+  }, []);
+
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [pathname]);
 
   useEffect(() => {
     if (!hasApiBackend()) return;
-    let active = true;
-    fetch(apiUrl("/api/site-content"))
-      .then((response) => {
-        if (!response.ok) throw new Error(`Website content request failed (${response.status}).`);
-        return response.json();
-      })
-      .then((content) => {
-        if (active) setSiteContent(content);
-      })
-      .catch((error) => {
-        console.error("Could not load published website customization:", error);
-      });
-    return () => { active = false; };
-  }, []);
+    const controller = new AbortController();
+    let refreshing = false;
+    let pending = false;
+    const refresh = async () => {
+      if (document.hidden) return;
+      if (refreshing) { pending = true; return; }
+      refreshing = true;
+      try {
+        await loadSiteContent({ signal: controller.signal });
+      } catch (error) {
+        if (error.name !== "AbortError")
+          console.error("Could not load published website customization:", error);
+      } finally {
+        refreshing = false;
+        if (pending && !controller.signal.aborted) {
+          pending = false;
+          refresh();
+        }
+      }
+    };
+    const events = typeof EventSource !== "undefined"
+      ? new EventSource(apiUrl("/api/site-content/events")) : null;
+    events?.addEventListener("content-updated", refresh);
+    refresh();
+    const interval = window.setInterval(refresh, 3000);
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      controller.abort();
+      events?.close();
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [loadSiteContent]);
 
   useEffect(() => {
     if (!siteContent?.settings) return;

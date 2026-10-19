@@ -1,10 +1,3 @@
-import liveRecording from "./assets/showcase-live-recording.jpg";
-import mobileStudio from "./assets/showcase-mobile-studio.jpg";
-import soundMixing from "./assets/showcase-sound-mixing.jpg";
-import trackMastering from "./assets/showcase-track-mastering.jpg";
-import voiceRecording from "./assets/showcase-voice-recording.jpg";
-import premiumStudio from "./assets/premium-studio-hero.png";
-
 export const projectCategories = [
   "All",
   "Weddings",
@@ -25,8 +18,8 @@ export const portfolioProjects = [
     services: ["Music Editing", "Choreography", "Costume Styling"],
     description:
       "A complete sangeet performance package with family acts, couple choreography, custom song transitions and stage-focused styling direction.",
-    coverImage: premiumStudio,
-    gallery: [premiumStudio, liveRecording, voiceRecording],
+    coverImage: "/costume-gallery/costume-wedding-sangeet-performance.jpg",
+    gallery: ["/costume-gallery/costume-wedding-sangeet-performance.jpg", "/main-service-cards/choreography.jpg", "/costume-gallery/costume-purple-stage-look.jpg"],
     audio: [
       { id: "wedding", title: "Original track direction", duration: 18 },
       { id: "dance", title: "Final performance edit", duration: 16 },
@@ -48,8 +41,8 @@ export const portfolioProjects = [
     services: ["Choreography", "Music Editing", "Costume Design"],
     description:
       "A destination wedding performance planned around guest comfort, camera-friendly formations and a polished final music track.",
-    coverImage: liveRecording,
-    gallery: [liveRecording, mobileStudio, soundMixing],
+    coverImage: "/main-service-cards/choreography.jpg",
+    gallery: ["/main-service-cards/choreography.jpg", "/costume-gallery/costume-futuristic-stage-ensemble.jpg", "/main-service-cards/background-music.jpg"],
     highlights: [
       "Bride and groom duet",
       "Family group choreography",
@@ -65,8 +58,8 @@ export const portfolioProjects = [
     services: ["Costume Design", "Creative Direction"],
     description:
       "Performance costume concepts shaped around choreography, lighting, movement and final stage presence.",
-    coverImage: voiceRecording,
-    gallery: [voiceRecording, premiumStudio, trackMastering],
+    coverImage: "/costume-gallery/costume-purple-stage-look.jpg",
+    gallery: ["/costume-gallery/costume-purple-stage-look.jpg", "/costume-gallery/costume-wedding-sangeet-performance.jpg", "/main-service-cards/music-editing.jpg"],
     highlights: [
       "Concept to final stage look",
       "Movement-friendly costume planning",
@@ -82,8 +75,8 @@ export const portfolioProjects = [
     services: ["Background Music", "Custom Music Production"],
     description:
       "A cinematic launch score with a controlled build, reveal cue and polished final mix for a premium event film.",
-    coverImage: soundMixing,
-    gallery: [soundMixing, trackMastering, mobileStudio],
+    coverImage: "/main-service-cards/background-music.jpg",
+    gallery: ["/main-service-cards/background-music.jpg", "/main-service-cards/music-editing.jpg", "/costume-gallery/costume-futuristic-stage-ensemble.jpg"],
     audio: [{ id: "launch", title: "Final launch score", duration: 16 }],
     highlights: [
       "Reveal-focused build",
@@ -100,8 +93,8 @@ export const portfolioProjects = [
     services: ["Music Editing", "Choreography"],
     description:
       "A group performance track and choreography structure built for clear counts, clean entries and confident stage timing.",
-    coverImage: mobileStudio,
-    gallery: [mobileStudio, liveRecording, soundMixing],
+    coverImage: "/costume-gallery/costume-futuristic-stage-ensemble.jpg",
+    gallery: ["/costume-gallery/costume-futuristic-stage-ensemble.jpg", "/main-service-cards/choreography.jpg", "/main-service-cards/background-music.jpg"],
     audio: [{ id: "remix", title: "Performance edit study", duration: 16 }],
     highlights: [
       "Group formations",

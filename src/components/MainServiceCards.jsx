@@ -37,8 +37,8 @@ export default function MainServiceCards({ siteContent }) {
         ...service,
         href: service.path,
         ...(curatedServiceImages[service.path] || {}),
-        image: curatedServiceImages[service.path]?.image || service.image || defaultServices[index % defaultServices.length].image,
-        imageAlt: curatedServiceImages[service.path]?.imageAlt || service.imageAlt || defaultServices[index % defaultServices.length].imageAlt,
+        image: service.image || curatedServiceImages[service.path]?.image || defaultServices[index % defaultServices.length].image,
+        imageAlt: service.imageAlt || curatedServiceImages[service.path]?.imageAlt || defaultServices[index % defaultServices.length].imageAlt,
       }))
     : defaultServices;
   return (

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import AudioPlayer from "./AudioPlayer";
-import { portfolioProjects, projectCategories } from "../projects";
+import CollectionMediaGroup from "./CollectionMediaGroup";
+import { mediaUrl } from "../api";
+import { portfolioProjects as defaultPortfolioProjects } from "../projects";
 import liveRecordingImage from "../assets/showcase-live-recording.jpg";
 import mobileStudioImage from "../assets/showcase-mobile-studio.jpg";
 import premiumStudioImage from "../assets/premium-studio-hero.png";
@@ -142,7 +144,7 @@ const youtubeVideos = [
 
 function getInstagramEmbedUrl(url) {
   if (!url) return "";
-  const reelMatch = url.match(/instagram\.com\/(?:reel|p)\/([^/?#]+)/i);
+  const reelMatch = url.match(/^https:\/\/(?:www\.)?instagram\.com\/(?:reels?|p)\/([\w-]+)(?:[/?#]|$)/i);
   if (!reelMatch) return "";
   return `https://www.instagram.com/reel/${reelMatch[1]}/embed/`;
 }
@@ -155,7 +157,7 @@ function getInstagramEmbedSrc(url, active) {
   return embedUrl.toString();
 }
 
-const instagramProjects = [
+const defaultInstagramProjects = [
   {
     title: "Reel Link Sheet",
     category: "Collection",
@@ -206,11 +208,6 @@ const instagramProjects = [
     href: "https://www.instagram.com/reel/DKwzEjpvWV8/?stkn=MTM1cmNqeDRzZjZzZQ==",
   },
 ];
-
-const defaultInstagramReelKey = (() => {
-  const index = instagramProjects.findIndex((project) => getInstagramEmbedUrl(project.href));
-  return index >= 0 ? `${instagramProjects[index].title}-${index}` : "";
-})();
 
 const collectionVideoCategories = [
   {
@@ -294,18 +291,29 @@ const musicEditingVideoShowcase = {
 
 const musicEditingVideoSections = [
   musicEditingVideoShowcase,
-  ...collectionVideoCategories.filter(({ id }) => ["sangeet", "stage"].includes(id)),
 ];
 
 const getCollectionVideoKey = (categoryId, index) => `${categoryId}::${index}`;
 
-export default function OurWork({ initialCategory = "editing", collectionPage = false, onStart }) {
+export default function OurWork({
+  initialCategory = "editing",
+  collectionPage = false,
+  showEditingReels = true,
+  managedMedia,
+  audioSection,
+  managedProjects,
+  managedReels,
+  onStart,
+}) {
   const [category, setCategory] = useState(initialCategory);
   const [filter, setFilter] = useState("All");
   const [projectFilter, setProjectFilter] = useState("All");
   const [activeProject, setActiveProject] = useState(null);
   const [activeYoutubeVideo, setActiveYoutubeVideo] = useState(null);
-  const [activeInstagramReel, setActiveInstagramReel] = useState(defaultInstagramReelKey);
+  const [activeInstagramReel, setActiveInstagramReel] = useState("");
+  const instagramProjects = useMemo(() => (Array.isArray(managedReels) ? managedReels : defaultInstagramProjects)
+    .filter((item) => item.enabled !== false && getInstagramEmbedUrl(item.href)), [managedReels]);
+  useEffect(() => { setActiveInstagramReel(""); }, [instagramProjects]);
   const [instagramEmbedsEnabled, setInstagramEmbedsEnabled] = useState(true);
   const [instagramResetKey, setInstagramResetKey] = useState(0);
   const [activeCollectionVideos, setActiveCollectionVideos] = useState(() =>
@@ -318,27 +326,28 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
   const collectionVideoSections = useRef(new Map());
   const collectionVideoPlayers = useRef(new Map());
   const collectionVideoCards = useRef(new Map());
-  const visible = demos.filter(
-    (demo) =>
-      demo.group === category &&
-      (filter === "All" || demo.tags.includes(filter)),
-  );
-  const filters =
-    category === "editing"
-      ? ["All", "Wedding", "Dance", "Mashup", "DJ Remix"]
-      : [
-          "All",
-          "Short Film",
-          "Advertisement",
-          "YouTube",
-          "Project Launch",
-          "Custom Score",
-        ];
+  const managedAudio = Array.isArray(managedMedia);
+  const samples = managedAudio
+    ? managedMedia.map((item, index) => ({ ...item, id: `page-audio-${index}` }))
+      .filter((item) => item.type === "audio" && item.url && item.enabled !== false)
+      .map((item) => {
+        const tags = (item.category || "").split(",").map((tag) => tag.trim()).filter(Boolean);
+        return { ...item, src: item.url, description: item.caption, tags: tags.length ? tags : ["Audio samples"] };
+      })
+    : demos.filter((demo) => demo.group === category);
+  const filters = ["All", ...new Set(samples.flatMap((sample) => sample.tags))];
+  const activeFilter = filters.includes(filter) ? filter : "All";
+  const visible = samples.filter((sample) => activeFilter === "All" || sample.tags.includes(activeFilter));
 
   const activateAudio = useCallback((player) => {
     if (activeAudio.current && activeAudio.current !== player)
       activeAudio.current.pause();
     activeAudio.current = player;
+    collectionVideoPlayers.current.forEach((video) => video.pause());
+    document.querySelectorAll(".collection-managed-carousel video").forEach((video) => video.pause());
+    setAudibleCollectionVideo("");
+    setActiveYoutubeVideo(null);
+    setActiveInstagramReel("");
   }, []);
 
   function stopPlayback() {
@@ -437,7 +446,11 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     };
   }, []);
 
-  const featuredProject = portfolioProjects.find((project) => project.featured);
+  const portfolioProjects = useMemo(() => (Array.isArray(managedProjects) ? managedProjects : defaultPortfolioProjects)
+    .filter((project) => project.enabled !== false)
+    .map((project) => ({ ...project, coverImage: mediaUrl(project.coverImage), gallery: (project.gallery || []).map(mediaUrl) })), [managedProjects]);
+  const projectCategories = ["All", ...new Set(portfolioProjects.flatMap((project) => [project.category, ...project.services]).filter(Boolean))];
+
   const filteredProjects = useMemo(
     () =>
       projectFilter === "All"
@@ -447,13 +460,13 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
               project.category === projectFilter ||
               project.services.includes(projectFilter),
           ),
-    [projectFilter],
+    [projectFilter, portfolioProjects],
   );
   const featuredProjects = useMemo(
     () => portfolioProjects.filter((project) => project.featured).concat(
       portfolioProjects.filter((project) => !project.featured),
     ).slice(0, 4),
-    [],
+    [portfolioProjects],
   );
   const collectionFilters = [
     "All Projects",
@@ -478,8 +491,26 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
   }, []);
   const activeCollectionProjects = useMemo(
     () => portfolioProjects.filter((project) => matchesCollectionFilter(project, projectFilter)),
-    [matchesCollectionFilter, projectFilter],
+    [matchesCollectionFilter, projectFilter, portfolioProjects],
   );
+  const managedCollectionGroups = useMemo(() => {
+    const groups = new Map();
+    (managedMedia || [])
+      .filter((item) => item?.url && item.enabled !== false && ["image", "video"].includes(item.type))
+      .forEach((item) => {
+        const categoryName = item.category?.trim() || "General";
+        if (!groups.has(categoryName)) groups.set(categoryName, []);
+        groups.get(categoryName).push(item);
+      });
+    return Array.from(groups, ([categoryName, items]) => ({ categoryName, items }));
+  }, [managedMedia]);
+  const musicSamples = Array.isArray(managedMedia)
+    ? managedMedia.filter((item) => item.type === "audio" && item.url && item.enabled !== false).map((item, index) => ({
+        id: `${item.url}-${index}`, src: item.url, title: item.title || "Audio sample",
+        category: item.category || "Audio samples", description: item.caption,
+        image: item.poster || collectionMusicSamples[index % collectionMusicSamples.length].image,
+      }))
+    : collectionMusicSamples;
   const musicProjects = useMemo(
     () =>
       portfolioProjects.filter((project) =>
@@ -488,7 +519,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
           ["Music Editing", "Background Music", "Custom Music Production"].includes(service),
         ),
       ),
-    [],
+    [portfolioProjects],
   );
   const choreographyProjects = useMemo(
     () =>
@@ -497,7 +528,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
         project.category === "Events" ||
         project.services.includes("Choreography"),
       ),
-    [],
+    [portfolioProjects],
   );
   const costumeProjects = useMemo(
     () =>
@@ -505,7 +536,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
         project.category === "Costume Design" ||
         project.services.some((service) => service.toLowerCase().includes("costume")),
       ),
-    [],
+    [portfolioProjects],
   );
   useEffect(() => {
     if (!collectionPage) return undefined;
@@ -639,6 +670,25 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     </div>
   );
 
+  const renderManagedCollectionMedia = () => {
+    if (!managedCollectionGroups.length) return null;
+
+    return (
+      <section className="collection-section collection-managed-media" aria-labelledby="admin-collection-media-title">
+        <div className="collection-section-heading">
+          <p className="eyebrow">SELECTED MOMENTS</p>
+          <h2 id="admin-collection-media-title">Every performance has a story.</h2>
+          <p>A closer look at the celebrations, movement and creative details behind our work.</p>
+        </div>
+        <div className="collection-managed-groups">
+          {managedCollectionGroups.map(({ categoryName, items }) => (
+            <CollectionMediaGroup categoryName={categoryName} items={items} key={categoryName} onPlay={stopPlayback} />
+          ))}
+        </div>
+      </section>
+    );
+  };
+
   const renderMusicSampleCard = (sample, index) => (
     <m.article
       className="collection-music-sample-card"
@@ -648,23 +698,30 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
       viewport={{ once: true, amount: 0.2 }}
       transition={{ delay: index * 0.05, duration: 0.38 }}
     >
-      <div className="collection-music-sample-art">
-        <img src={sample.image} alt={`${sample.title} visual`} loading="lazy" />
-        <span>{String(index + 1).padStart(2, "0")}</span>
+      <div className="collection-audio-card-heading">
+        <span>VOL. {String(index + 1).padStart(2, "0")}</span>
+        <span><i aria-hidden="true" /> Audio preview</span>
       </div>
-      <div className="collection-music-sample-body">
-        <p>{sample.category}</p>
-        <h3>{sample.title}</h3>
-        <small>{sample.description}</small>
-        <div className="collection-card-audio collection-sample-audio">
-          <p>Preview sample</p>
+      <div className="collection-audio-release">
+        <div className="collection-music-sample-art">
+          <img src={mediaUrl(sample.image)} alt="" loading="lazy" />
+        </div>
+        <div className="collection-music-sample-body">
+          <p>{sample.category}</p>
+          <h3>{sample.title}</h3>
+          <span className="collection-audio-credit">MR MUSIC MACK</span>
+        </div>
+      </div>
+      {sample.description && <p className="collection-audio-description">{sample.description}</p>}
+      <div className="collection-card-audio collection-sample-audio">
+          <p><span>Listen to the edit</span><span aria-hidden="true">↗</span></p>
           <AudioPlayer
             id={sample.id}
+            src={sample.src}
             title={sample.title}
             duration={sample.duration}
             onActivate={activateAudio}
           />
-        </div>
       </div>
     </m.article>
   );
@@ -822,7 +879,7 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
           .map((project) => ({ ...project, embedUrl: getInstagramEmbedUrl(project.href) }))
           .filter((project) => project.embedUrl)
           .map((project, index) => {
-          const cardKey = `${project.title}-${index}`;
+          const cardKey = `${project.href}-${index}`;
           const isActive = activeInstagramReel === cardKey;
 
           return (
@@ -975,175 +1032,8 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
     </AnimatePresence>
   );
 
-  if (collectionPage) {
-    return (
-      <section className="collection-premium wrap" id="our-work">
-        <section className="collection-page-hero" aria-labelledby="collection-page-title">
-          <div>
-            <p className="eyebrow">THE COLLECTION / MR MUSIC MACK</p>
-            <h1 id="collection-page-title">A Collection of Creativity, Passion &amp; Performance.</h1>
-            <p>
-              Explore selected music editing, audio production, choreography and
-              costume design work shaped by MR MUSIC MACK from Jaipur for
-              clients across India and worldwide.
-            </p>
-            <div className="button-row">
-              <a className="button primary" href="#collection-projects">Explore projects</a>
-              <button
-                className="button secondary"
-                type="button"
-                onClick={() => onStart?.("Music Editing", "", "Creative Portfolio Enquiry")}
-              >
-                Start your project
-              </button>
-            </div>
-          </div>
-          <div className="collection-page-stats" aria-label="Collection highlights">
-            <span><b>{portfolioProjects.length}</b> Published projects</span>
-            <span><b>{youtubeVideos.length}</b> Performance videos</span>
-            <span><b>{instagramProjects.filter((item) => getInstagramEmbedUrl(item.href)).length}</b> Instagram reels</span>
-          </div>
-        </section>
-
-        {collectionVideoCategories.map((categoryData, index) =>
-          renderCollectionVideoSlider(categoryData, index),
-        )}
-
-        <section className="collection-section" aria-labelledby="instagram-reels-title">
-          <div className="collection-section-heading">
-            <p className="eyebrow">INSTAGRAM REELS COLLECTION</p>
-            <h2 id="instagram-reels-title">Recent performance reels in motion.</h2>
-            <p>These embedded reel cards keep their existing playback, slider and scroll-stop behavior.</p>
-          </div>
-          {renderInstagramReels()}
-        </section>
-
-        {renderYoutubeVideos()}
-
-        <section className="collection-section" aria-labelledby="music-projects-title">
-          <div className="collection-section-heading">
-            <p className="eyebrow">COMPLETED MUSIC EDITING PROJECTS</p>
-            <h2 id="music-projects-title">Audio-led projects with available previews.</h2>
-          </div>
-          <div className="collection-music-sample-grid" aria-label="Additional music samples">
-            {collectionMusicSamples.map((sample, index) => renderMusicSampleCard(sample, index))}
-          </div>
-        </section>
-
-        <section className="collection-section collection-stories" aria-labelledby="project-stories-title">
-          <div className="collection-section-heading">
-            <p className="eyebrow">PROJECT STORIES &amp; DETAILS</p>
-            <h2 id="project-stories-title">Briefs, highlights and final creative direction.</h2>
-          </div>
-          <div className="collection-story-grid">
-            {portfolioProjects.map((project, index) => (
-              <button type="button" key={project.slug} onClick={() => openProject(project)}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{project.title}</strong>
-                <small>{project.highlights[0] || project.description}</small>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="collection-final-cta collection-collaboration-cta" aria-labelledby="collection-final-title">
-          <p className="eyebrow">CREATIVE COLLABORATION</p>
-          <h2 id="collection-final-title">Let us shape your next performance.</h2>
-          <p>
-            Share your song, event, video, outfit reference or performance idea.
-            We will help plan the sound, movement and visual direction around it.
-          </p>
-          <div>
-            <button className="button primary" type="button" onClick={() => onStart?.("Music Editing", "", "The Collection Enquiry")}>
-              Start your project
-            </button>
-            <a className="button secondary" href="https://wa.me/919887563201" target="_blank" rel="noreferrer">
-              WhatsApp us
-            </a>
-          </div>
-        </section>
-        {renderProjectModal()}
-      </section>
-    );
-  }
-
-  return (
-    <section className="section wrap" id="our-work">
-      <div className="section-intro">
-        <div>
-          <p className="eyebrow">LESS TALK. MORE LISTENING.</p>
-          <h2>
-            Don't Just Read About It.
-            <br />
-            Hear the Work.
-          </h2>
-        </div>
-        <p>
-          Explore the two sides of sound. Start with a demonstration, then tell
-          us what you have in mind.
-        </p>
-      </div>
-      <div className="work-tabs" aria-label="Portfolio categories">
-        {[
-          ["editing", "MUSIC EDITING"],
-          ["background", "BACKGROUND MUSIC"],
-        ].map(([value, label]) => (
-          <button
-            key={value}
-            aria-pressed={category === value}
-            onClick={() => {
-              stopPlayback();
-              setCategory(value);
-              setFilter("All");
-            }}
-          >
-            {label} ↗
-          </button>
-        ))}
-      </div>
-      <div className="work-filters" aria-label="Filter samples">
-        {filters.map((item) => (
-          <button
-            key={item}
-            aria-pressed={filter === item}
-            onClick={() => {
-              stopPlayback();
-              setFilter(item);
-            }}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-      <div className="work-grid">
-        {visible.map((demo) => (
-          <m.article
-            className="work-card"
-            key={demo.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="sample-label">
-              <span>{demo.tags[0].toUpperCase()}</span>
-              <span>DEMONSTRATION</span>
-            </div>
-            <h3>{demo.title}</h3>
-            <p>{demo.description}</p>
-            <AudioPlayer
-              id={demo.id}
-              title={demo.title}
-              duration={demo.duration}
-              onActivate={activateAudio}
-            />
-          </m.article>
-        ))}
-      </div>
-      {category === "editing" &&
-        musicEditingVideoSections.map((section, index) =>
-          renderCollectionVideoSlider(section, index),
-        )}
-      <section className="collection-portfolio" aria-labelledby="collection-portfolio-title">
+  const renderPortfolio = () => (
+    <section className="collection-portfolio" aria-labelledby="collection-portfolio-title">
         <div className="collection-hero-copy">
           <p className="eyebrow">CREATIVE PERFORMANCE STUDIO / SERVING CLIENTS ACROSS INDIA</p>
           <h2 id="collection-portfolio-title">
@@ -1156,29 +1046,6 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
             projects created for weddings, events and special productions.
           </p>
         </div>
-        {featuredProject && (
-          <m.article
-            className="featured-project"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-          >
-            <img src={featuredProject.coverImage} alt={`${featuredProject.title} project cover`} loading="lazy" />
-            <div>
-              <p className="eyebrow">FEATURED PROJECT</p>
-              <h3>{featuredProject.title}</h3>
-              <span>{featuredProject.location} / {featuredProject.year}</span>
-              <ul>
-                {featuredProject.services.map((service) => (
-                  <li key={service}>{service}</li>
-                ))}
-              </ul>
-              <button type="button" onClick={() => openProject(featuredProject)}>
-                View case study &rarr;
-              </button>
-            </div>
-          </m.article>
-        )}
         <div className="project-filter-bar" aria-label="Filter portfolio projects">
           {projectCategories.map((item) => (
             <button
@@ -1223,96 +1090,170 @@ export default function OurWork({ initialCategory = "editing", collectionPage = 
           </AnimatePresence>
         </div>
       </section>
-      <section className="media-reels-section" aria-label="YouTube performance videos">
-        <div className="media-reel-grid">
-          {youtubeVideos.map((video, index) => (
-            <m.article
-              className="media-reel-card"
-              key={video.id}
-              data-media-active={activeYoutubeVideo === video.id ? `youtube-${video.id}` : undefined}
-              tabIndex={0}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: index * 0.04, duration: 0.45 }}
-            >
-              {activeYoutubeVideo === video.id ? (
-                <iframe
-                  title={`${video.title} YouTube video`}
-                  src={`https://www.youtube.com/embed/${video.id}?autoplay=1&mute=0&controls=1&modestbranding=1&playsinline=1&rel=0`}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              ) : (
-                <img src={`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`} alt={`${video.title} YouTube video`} loading="lazy" />
-              )}
-              <button
-                className="media-play-button"
-                type="button"
-                onClick={() => {
-                  stopPlayback();
-                  setInstagramResetKey((value) => value + 1);
-                  setActiveYoutubeVideo(video.id);
-                }}
-                aria-label={`Play ${video.title} YouTube video`}
-              >
-                Play
-              </button>
-              <b>YouTube</b>
-              <span>{video.title}</span>
-            </m.article>
-          ))}
-        </div>
-      </section>
-      <section className="media-reels-section instagram-reel-slider" aria-label="Instagram reels" ref={instagramSection}>
-        <div className="media-reel-grid">
-          {instagramProjects
-            .map((project) => ({ ...project, embedUrl: getInstagramEmbedUrl(project.href) }))
-            .filter((project) => project.embedUrl)
-            .map((project, index) => {
-            const cardKey = `${project.title}-${index}`;
-            const isActive = activeInstagramReel === cardKey;
+  );
 
-            return (
-            <m.article
-              className={`media-reel-card instagram-inline-reel${isActive ? " is-active" : ""}`}
-              key={cardKey}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ delay: index * 0.04, duration: 0.45 }}
-            >
-              {instagramEmbedsEnabled && (
-                <iframe
-                  title={`${project.title} Instagram reel`}
-                  key={`${cardKey}-${instagramResetKey}-${isActive ? "active" : "idle"}`}
-                  src={getInstagramEmbedSrc(project.embedUrl, isActive)}
-                  loading="lazy"
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              )}
+  if (collectionPage) {
+    return (
+      <section className="collection-premium wrap" id="our-work">
+        <section className="collection-page-hero" aria-labelledby="collection-page-title">
+          <div>
+            <p className="eyebrow">THE COLLECTION / MR MUSIC MACK</p>
+            <h1 id="collection-page-title">A Collection of Creativity, Passion &amp; Performance.</h1>
+            <p>
+              Explore selected music editing, audio production, choreography and
+              costume design work shaped by MR MUSIC MACK from Jaipur for
+              clients across India and worldwide.
+            </p>
+            <div className="button-row">
+              <a className="button primary" href="#collection-projects">Explore projects</a>
               <button
-                className="media-play-button"
+                className="button secondary"
                 type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  playInstagramReel(cardKey);
-                }}
-                aria-label={`Play ${project.title} Instagram reel`}
+                onClick={() => onStart?.("Music Editing", "", "Creative Portfolio Enquiry")}
               >
-                {isActive ? "Playing" : "Play"}
+                Start your project
               </button>
-              <b>{project.platform || "Instagram"}</b>
-              <span>{project.title}</span>
-            </m.article>
-            );
-          })}
-        </div>
+            </div>
+          </div>
+          <div className="collection-page-stats" aria-label="Collection highlights">
+            <span><b>{portfolioProjects.length}</b> Published projects</span>
+            <span><b>{youtubeVideos.length}</b> Performance videos</span>
+            <span><b>{instagramProjects.filter((item) => getInstagramEmbedUrl(item.href)).length}</b> Instagram reels</span>
+          </div>
+        </section>
+
+        {renderPortfolio()}
+
+        {renderManagedCollectionMedia()}
+
+        {!Array.isArray(managedMedia) && collectionVideoCategories.map((categoryData, index) =>
+          renderCollectionVideoSlider(categoryData, index),
+        )}
+
+        <section className="collection-section" aria-labelledby="instagram-reels-title">
+          <div className="collection-section-heading">
+            <p className="eyebrow">INSTAGRAM REELS COLLECTION</p>
+            <h2 id="instagram-reels-title">Recent performance reels in motion.</h2>
+            <p>Wedding highlights, expressive performances and moments worth watching again.</p>
+          </div>
+          {renderInstagramReels()}
+        </section>
+
+        {renderYoutubeVideos()}
+
+        <section className="collection-section collection-stories" aria-labelledby="project-stories-title">
+          <div className="collection-section-heading">
+            <p className="eyebrow">PROJECT STORIES &amp; DETAILS</p>
+            <h2 id="project-stories-title">Briefs, highlights and final creative direction.</h2>
+          </div>
+          <div className="collection-story-grid">
+            {portfolioProjects.map((project, index) => (
+              <button type="button" key={project.slug} onClick={() => openProject(project)}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{project.title}</strong>
+                <small>{project.highlights[0] || project.description}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="collection-final-cta collection-collaboration-cta" aria-labelledby="collection-final-title">
+          <p className="eyebrow">CREATIVE COLLABORATION</p>
+          <h2 id="collection-final-title">Let us shape your next performance.</h2>
+          <p>
+            Share your song, event, video, outfit reference or performance idea.
+            We will help plan the sound, movement and visual direction around it.
+          </p>
+          <div>
+            <button className="button primary" type="button" onClick={() => onStart?.("Music Editing", "", "The Collection Enquiry")}>
+              Start your project
+            </button>
+            <a className="button secondary" href="https://wa.me/919887563201" target="_blank" rel="noreferrer">
+              WhatsApp us
+            </a>
+          </div>
+        </section>
+        {renderProjectModal()}
       </section>
+    );
+  }
+
+  return (
+    <section className="section wrap" id="our-work">
+      <div className="section-intro">
+        <div>
+          <p className="eyebrow">{audioSection?.eyebrow ?? "LESS TALK. MORE LISTENING."}</p>
+          <h2>
+            {audioSection?.title ?? "Don't Just Read About It. Hear the Work."}
+          </h2>
+        </div>
+        <p>
+          {audioSection?.description ?? "Explore the two sides of sound. Start with a demonstration, then tell us what you have in mind."}
+        </p>
+      </div>
+      {!managedAudio && <div className="work-tabs" aria-label="Portfolio categories">
+        {[
+          ["editing", "MUSIC EDITING"],
+          ["background", "BACKGROUND MUSIC"],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            aria-pressed={category === value}
+            onClick={() => {
+              stopPlayback();
+              setCategory(value);
+              setFilter("All");
+            }}
+          >
+            {label} ↗
+          </button>
+        ))}
+      </div>}
+      <div className="work-filters" aria-label="Filter samples">
+        {filters.map((item) => (
+          <button
+            key={item}
+            aria-pressed={activeFilter === item}
+            onClick={() => {
+              stopPlayback();
+              setFilter(item);
+            }}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+      <div className="work-grid">
+        {visible.map((demo) => (
+          <m.article
+            className="work-card"
+            key={demo.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="sample-label">
+              <span>{demo.tags[0].toUpperCase()}</span>
+              <span>{managedAudio ? "AUDIO SAMPLE" : "DEMONSTRATION"}</span>
+            </div>
+            {demo.poster && <img className="service-audio-cover" src={mediaUrl(demo.poster)} alt="" loading="lazy" />}
+            <h3>{demo.title}</h3>
+            <p>{demo.description}</p>
+            <AudioPlayer
+              id={demo.id}
+              src={demo.src}
+              title={demo.title}
+              duration={demo.duration}
+              onActivate={activateAudio}
+            />
+          </m.article>
+        ))}
+      </div>
+      {!visible.length && <p className="collection-empty-state">Audio samples will appear here when they are available.</p>}
+      {showEditingReels && category === "editing" &&
+        musicEditingVideoSections.map((section, index) =>
+          renderCollectionVideoSlider(section, index),
+        )}
       <div className="comparison">
         <div>
           <small>BEFORE / DIFFERENT TRACKS</small>

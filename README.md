@@ -15,7 +15,14 @@ Public website built with React, Vite and Framer Motion. Keep website source, as
 - `src/index.css`: Website styles and responsive layouts.
 - `scripts/`: Website build verification, HTML prerendering and sample audio generation.
 
-Run `npm install`, then `npm run dev`. Start `../Backend` for project brief submissions; Vite proxies `/api` to port 3001.
+Run `npm install`, then `npm run dev`. Website content, live events, project brief
+submissions and uploaded media use `https://mrmusicmack.com/api/` by default.
+Vite proxies `/api` and `/media` to this backend during development; no local
+Backend is required. Form submissions go to the live website.
+
+Set `VITE_API_BASE_URL` in `Frontend/.env` to override the backend, then restart
+Vite or rebuild. A backend origin or its `/api/` URL is accepted. For a local
+backend, use `VITE_API_BASE_URL=http://127.0.0.1:3001/api`.
 
 Validation: `npm run build`, `npm run lint`, then `npm test`.
 The build generates 17 static pages in `dist/` and removes its temporary `.prerender/` bundle. `src/entry-server.jsx` renders website HTML at build time; it is not the booking API.

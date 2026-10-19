@@ -1342,6 +1342,11 @@ export default function ServicePage({
       {(isWork || isEditing || isBackground || (service && !isCostumeDesign && !isChoreographer)) && (
         <OurWork
           collectionPage={isWork}
+          showEditingReels={!isEditing}
+          managedMedia={managedPage?.media}
+          audioSection={managedPage?.audioSection}
+          managedReels={managedPage?.reels}
+          managedProjects={isWork ? siteContent?.pages?.["/music-editing"]?.projects : managedPage?.projects}
           onStart={startProject}
           initialCategory={
             isBackground ||

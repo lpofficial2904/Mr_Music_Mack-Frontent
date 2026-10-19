@@ -5,7 +5,7 @@ import servicesImage from "../assets/studio-services.png";
 
 const MotionLink = motion.create(Link);
 
-const services = [
+const defaultServices = [
   [
     "Sound Mixing",
     "Bring every instrument and vocal together with depth, balance and a mix that lets your music shine.",
@@ -33,11 +33,15 @@ const services = [
   ],
 ];
 
-export default function ServiceGallery() {
+export default function ServiceGallery({ siteContent }) {
+  const services = siteContent?.services
+    ? siteContent.services.filter((service) => service.enabled && service.category === "editing")
+      .map((service) => [service.name, service.description, service.path])
+    : defaultServices;
   const [active, setActive] = useState(null);
   const [slide, setSlide] = useState(0);
   const [compact, setCompact] = useState(false);
-  const [perPage, setPerPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const reduceMotion = useReducedMotion();
   const track = useRef(null);
   const panelVariants = {
@@ -62,25 +66,38 @@ export default function ServiceGallery() {
   useEffect(() => {
     const mobile = window.matchMedia("(max-width: 600px)");
     const tablet = window.matchMedia("(max-width: 1000px)");
+    const medium = window.matchMedia("(max-width: 1220px)");
     const update = () => {
       setCompact(tablet.matches);
-      setPerPage(mobile.matches ? 1 : 2);
+      setPerPage(mobile.matches ? 1 : tablet.matches ? 2 : medium.matches ? 3 : 5);
       setSlide(0);
       track.current?.scrollTo({ left: 0, behavior: "instant" });
     };
     update();
     mobile.addEventListener("change", update);
     tablet.addEventListener("change", update);
+    medium.addEventListener("change", update);
     return () => {
       mobile.removeEventListener("change", update);
       tablet.removeEventListener("change", update);
+      medium.removeEventListener("change", update);
     };
   }, []);
-  const lastSlide = services.length - perPage;
+  const lastSlide = Math.max(0, services.length - perPage);
+  useEffect(() => {
+    setSlide(0);
+    setActive(null);
+    track.current?.scrollTo({ left: 0, behavior: "instant" });
+  }, [services.length]);
+  function panelStep() {
+    const panels = track.current?.querySelectorAll(".gallery-panel");
+    if (!panels?.length) return 0;
+    return panels.length > 1 ? panels[1].offsetLeft - panels[0].offsetLeft : panels[0].clientWidth;
+  }
   function goTo(index) {
     const next = Math.max(0, Math.min(index, lastSlide));
     if (!track.current) return;
-    const width = track.current.clientWidth / perPage;
+    const width = panelStep();
     track.current.scrollTo({
       left: next * width,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -89,32 +106,34 @@ export default function ServiceGallery() {
     });
   }
   useEffect(() => {
-    if (!compact || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+    if (!compact || !lastSlide || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
       return;
     const timer = window.setInterval(() => {
       const next = slide >= lastSlide ? 0 : slide + 1;
-      const width = track.current.clientWidth / perPage;
+      if (!track.current) return;
+      const width = panelStep();
       track.current.scrollTo({ left: next * width, behavior: "smooth" });
       setSlide(next);
     }, 4000);
     return () => window.clearInterval(timer);
   }, [compact, lastSlide, perPage, slide]);
+  if (!services.length) return null;
   return (
     <div className="service-gallery-shell">
       <section
         ref={track}
         className="service-gallery"
         id="service-gallery-track"
-        aria-roledescription={compact ? "carousel" : undefined}
+        aria-roledescription="carousel"
         aria-label="Explore our studio services"
         onScroll={() => {
-          if (compact && track.current)
+          if (track.current && panelStep())
             setSlide(
               Math.min(
                 lastSlide,
                 Math.round(
                   track.current.scrollLeft /
-                    (track.current.clientWidth / perPage),
+                    panelStep(),
                 ),
               ),
             );
@@ -129,7 +148,7 @@ export default function ServiceGallery() {
       >
         {services.map(([title, description, href], index) => (
           <motion.article
-            key={title}
+            key={`${href}-${title}-${index}`}
             className={`gallery-panel ${(compact ? index >= slide && index < slide + perPage : active === index) ? "is-active" : ""}`}
             custom={index}
             variants={panelVariants}
@@ -162,7 +181,7 @@ export default function ServiceGallery() {
                 aria-controls={`gallery-description-${index}`}
                 onClick={() => (compact ? goTo(index) : setActive(index))}
               >
-                {title}
+                <span className="gallery-title">{title}</span>
                 <span className="gallery-tap-hint" aria-hidden="true">
                   +
                 </span>
@@ -176,7 +195,7 @@ export default function ServiceGallery() {
                 decoding="async"
                 width="1536"
                 height="1024"
-                style={{ left: `${index * -100}%` }}
+                style={{ left: `${(index % 5) * -100}%` }}
               />
               <div className="gallery-tint" />
               <div
@@ -199,7 +218,7 @@ export default function ServiceGallery() {
                   viewport={{ once: true }}
                   transition={{ duration: reduceMotion ? 0 : 0.48, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {description}
+                  {description || defaultServices.find((service) => service[2] === href)?.[1] || `Explore ${title} and discuss your project with our team.`}
                 </motion.p>
                 <MotionLink
                   to={href}
@@ -215,7 +234,7 @@ export default function ServiceGallery() {
           </motion.article>
         ))}
       </section>
-      <div className="gallery-controls" aria-label="Service slider controls">
+      {lastSlide > 0 && <div className="gallery-controls" aria-label="Service slider controls">
         <button
           type="button"
           onClick={() => goTo(slide - 1)}
@@ -226,10 +245,11 @@ export default function ServiceGallery() {
           ←
         </button>
         <div className="gallery-dots">
-          {services.slice(0, lastSlide + 1).map(([title], index) => (
+          {services.slice(0, lastSlide + 1).map(([title], index) =>
+            (index === 0 || index === lastSlide || Math.abs(index - slide) <= 2) && (
             <button
               type="button"
-              key={title}
+              key={index}
               aria-label={`Show ${title}`}
               aria-current={slide === index ? "true" : undefined}
               onClick={() => goTo(index)}
@@ -250,7 +270,7 @@ export default function ServiceGallery() {
         <p className="gallery-slide-status" aria-live="polite">
           {slide + 1} / {lastSlide + 1}
         </p>
-      </div>
+      </div>}
     </div>
   );
 }
