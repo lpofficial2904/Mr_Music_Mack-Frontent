@@ -1,5 +1,8 @@
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL?.trim() || "https://mrmusicmack.com/api")
   .replace(/\/+$/, "").replace(/\/api$/, "");
+const configuredMediaBase = (import.meta.env.VITE_MEDIA_BASE_URL?.trim() ||
+  (configuredApiBase === "https://mrmusicmack.com" ? "https://admin.mrmusicmack.com" : configuredApiBase))
+  .replace(/\/+$/, "");
 
 export function hasApiBackend() {
   return true;
@@ -12,5 +15,6 @@ export function apiUrl(path) {
 }
 
 export function mediaUrl(path) {
-  return path?.startsWith("/media/") ? apiUrl(path) : path;
+  if (!path?.startsWith("/media/")) return path;
+  return import.meta.env.DEV ? path : `${configuredMediaBase}${path}`;
 }

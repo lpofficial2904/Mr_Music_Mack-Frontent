@@ -30,3 +30,8 @@ The build generates 17 static pages in `dist/` and removes its temporary `.prere
 Booking APIs, uploads and private customer data belong in `Backend/`. Admin dashboard code belongs in `Admin/`, which is reserved until that feature is implemented.
 
 Audio samples are synthesized demonstrations, not client recordings. `npm run generate:demos` recreates them. Studio illustrations are AI-generated; service pages also use illustrative stock images. `public/logo.jpg` is the original brand artwork embedded in the website and favicon SVGs.
+
+Uploaded website media uses `VITE_MEDIA_BASE_URL` (default:
+`https://admin.mrmusicmack.com`). The public website serves static files while the
+admin backend owns `/media`. `VITE_API_BASE_URL` continues to select the content API.
+For a custom backend, uploaded media defaults to that API origin unless overridden.

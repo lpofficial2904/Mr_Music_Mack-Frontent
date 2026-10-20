@@ -2,6 +2,20 @@ import assert from "node:assert/strict";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
+import { readFile } from "node:fs/promises";
+
+const apiSource = await readFile(new URL("../src/api.js", import.meta.url), "utf8");
+for (const [env, expected] of [
+  [{ DEV: false }, "https://admin.mrmusicmack.com/media/test.mp3"],
+  [{ DEV: false, VITE_API_BASE_URL: "https://backend.example/api" }, "https://backend.example/media/test.mp3"],
+  [{ DEV: false, VITE_MEDIA_BASE_URL: "https://cdn.example/" }, "https://cdn.example/media/test.mp3"],
+  [{ DEV: true }, "/media/test.mp3"],
+]) {
+  const code = apiSource.replaceAll("import.meta.env", JSON.stringify(env));
+  const { mediaUrl } = await import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+  assert.equal(mediaUrl("/media/test.mp3"), expected);
+  assert.equal(mediaUrl("/main-service-cards/music-editing.jpg"), "/main-service-cards/music-editing.jpg");
+}
 
 const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" });
 try {
