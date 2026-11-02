@@ -880,8 +880,6 @@ export default function OurWork({
             viewport={{ once: true, amount: 0.25 }}
             transition={{ delay: index * 0.04, duration: 0.45 }}
           >
-            <img src={mediaUrl(project.poster || project.image) || liveRecordingImage} alt="" loading="lazy" decoding="async" />
-            {isActive && (
               <iframe
                 title={`${project.title} Instagram reel`}
                 key={cardKey}
@@ -891,7 +889,6 @@ export default function OurWork({
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
-            )}
             <button
               className="media-play-button"
               type="button"
@@ -903,7 +900,7 @@ export default function OurWork({
             >
               {isActive ? "Playing" : "Play"}
             </button>
-            <a className="reel-external-link" href={project.href} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} on Instagram`}>Open on Instagram ?</a>
+            <a className="reel-external-link" href={project.href} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} on Instagram`}>Open on Instagram &rarr;</a>
             <b>{project.platform || "Instagram"}</b>
             <span>{project.title}</span>
           </m.article>

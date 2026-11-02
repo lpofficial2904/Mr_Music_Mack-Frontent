@@ -112,7 +112,10 @@ try {
     collectionPage: true, managedMedia: [], managedProjects: [],
     managedReels: [{ title: "Wedding reel", href: "https://www.instagram.com/reel/DUr_lWiCUp4/", enabled: true }],
   }));
-  assert.doesNotMatch(reelHtml, /<iframe[^>]+src="https:\/\/www\.instagram\.com/);
+  assert.match(reelHtml, /<iframe[^>]+src="https:\/\/www\.instagram\.com/);
+  const reelSection = reelHtml.match(/<section class="media-reels-section instagram-reel-slider"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(reelSection, "Instagram reel section renders");
+  assert.doesNotMatch(reelSection, /<img\b/, "Reels show actual embedded video previews without studio photos");
   assert.match(reelHtml, /Open on Instagram/);
   assert.match(reelHtml, /Play Wedding reel Instagram reel/);
 
