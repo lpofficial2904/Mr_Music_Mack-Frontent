@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { render } from "../.prerender/entry-server.js";
 import { landingPages } from "../src/siteData.js";
 import { policyPages } from "../src/policyPages.js";
+import { routeAliases } from "../src/seo.js";
 
 const routes = [
   ...new Set([
@@ -28,7 +29,7 @@ const siteUrl = (
 const defaultHeadPattern =
   /<title>[\s\S]*?<\/title>\s*<meta\s+name="description"[^>]*\/>/;
 
-for (const route of routes) {
+for (const route of [...routes, "/404"]) {
   const rendered = await render(route);
   const markup = typeof rendered === "string" ? rendered : rendered.html;
   const helmet = typeof rendered === "string" ? null : rendered.helmet;
@@ -67,12 +68,17 @@ for (const route of routes) {
   const html = template
     .replace(defaultHeadPattern, headTags)
     .replace('<div id="root"></div>', `<div id="root">${cleanMarkup}</div>`);
+  if (route === "/404") {
+    await writeFile(new URL("404.html", dist), html);
+    continue;
+  }
   const folder = new URL(route === "/" ? "./" : `.${route}/`, dist);
   await mkdir(folder, { recursive: true });
   await writeFile(new URL("index.html", folder), html);
 }
 
 const sitemapEntries = routes
+  .filter((route) => !routeAliases[route] && !policyPages[route]?.pending)
   .map((route) => {
     const location = `${siteUrl}${route === "/" ? "" : route}`;
     return `  <url><loc>${location.replaceAll("&", "&amp;")}</loc></url>`;
@@ -84,7 +90,7 @@ await writeFile(
 );
 await writeFile(
   new URL("robots.txt", dist),
-  `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`,
+  `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin/\nSitemap: ${siteUrl}/sitemap.xml\n`,
 );
 console.log(
   `Pre-rendered ${routes.length} pages with page-specific content and metadata; generated sitemap and robots.txt.`,

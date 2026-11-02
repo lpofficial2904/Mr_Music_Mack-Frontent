@@ -157,7 +157,7 @@ export default function Hero({ onStart, siteContent }) {
   return (
     <section className="reference-hero frequency-hero" id="home">
       <div className="reference-hero-media" aria-hidden="true">
-        <img src={mediaUrl(home?.heroBackground) || premiumStudioHero} alt="" />
+        <img src={mediaUrl(home?.heroBackground) || premiumStudioHero} alt="" fetchPriority="high" loading="eager" decoding="async" />
       </div>
       <div className="reference-hero-scrim" aria-hidden="true" />
       <div className="reference-soundwaves" aria-hidden="true">

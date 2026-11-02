@@ -1,149 +1,36 @@
 import { lazy, Suspense } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import {
-  choreographerSeo,
-  createChoreographerSchema,
-  landingPages,
-  serviceSeoContent,
-} from "../siteData";
+import { createChoreographerSchema, landingPages } from "../siteData";
 import ProjectCTA from "./ProjectCTA";
 import ServiceGallery from "./ServiceGallery";
 import ManagedPageMedia from "./ManagedPageMedia";
 import { policyPages } from "../policyPages";
+import { seoPages as seoByPath, canonicalPath } from "../seo";
+import { createPageSchema } from "../seoSchema";
 
-const choreographerHeroImage = "/costume-gallery/costume-wedding-sangeet-performance.jpg";
+const choreographerHeroImage =
+  "/costume-gallery/costume-wedding-sangeet-performance.jpg";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const ServicePage = lazy(() => import("../pages/ServicePage"));
 const ContactPage = lazy(() => import("../pages/ContactPage"));
 const PolicyPage = lazy(() => import("../pages/PolicyPage"));
 
-const seoByPath = {
-  "/": {
-    title: "Music Editing, Choreographer, Costume Design & Background Music Services in India | MR MUSIC MACK",
-    description:
-      "MR MUSIC MACK Jaipur provides professional music editing, wedding mashups, DJ remix, background music, choreographer, dance performance music and costume design services online across India.",
-    keywords:
-      "music editing services India, music editing studio Jaipur, wedding mashup editing India, DJ remix service India, background music production India, choreographer services India, costume design services India",
-  },
-  "/music-editing": {
-    title: "Professional Music Editing, Song Mixing, Mashup & DJ Remix Services in India",
-    description:
-      "Professional music editing services for song cutting, audio arrangement, mashup editing, DJ remix, mix mastering, dance performance tracks and wedding music across India.",
-    keywords:
-      "professional music editing India, song editing service, audio editing service India, song cutting and joining, mashup editing India, DJ remix service India, mix mastering India, dance performance music editing",
-  },
-  "/background-music": {
-    title: "Custom Background Music Production for Films, YouTube, Ads & Launches in India",
-    description:
-      "Custom background music production for short films, YouTube videos, advertisements, brand videos, product launches, presentations and creative projects across India.",
-    keywords:
-      "background music production India, custom background score India, short film background music, YouTube background music India, advertisement music India, project launch music, brand video music",
-  },
-  "/choreographer": {
-    ...choreographerSeo,
-  },
-  "/costume-design": {
-    title: "Costume Designer in Jaipur | Dance & Stage Costumes | MR MUSIC MACK",
-    description:
-      "Explore creative costume design in Jaipur by MR MUSIC MACK. Traditional, western, party wear, dance and stage costume concepts for India and beyond.",
-    keywords:
-      "Costume Designer in Jaipur, custom costume design, dance costume designer, stage costume designer, performance costume design, traditional costume design, western costume design, theme based costume design, wedding performance costume design",
-  },
-  "/the-collection": {
-    title: "The Collection | Music, Choreography & Costume Portfolio | MR MUSIC MACK",
-    description:
-      "Explore completed music editing, audio production, choreography and costume design projects by MR MUSIC MACK, a Jaipur-based creative studio serving India and worldwide.",
-    keywords:
-      "MR MUSIC MACK portfolio, music editing portfolio, choreography portfolio, costume design portfolio, Jaipur creative studio, wedding performance projects, audio production India",
-  },
-  "/the-studio": {
-    title: "The Studio | Music Editing & Creative Production | MR MUSIC MACK",
-    description:
-      "Discover MR MUSIC MACK, a Jaipur-based creative studio offering professional music editing, audio production, choreography and costume design for clients across India and worldwide.",
-    keywords:
-      "Professional Music Editing Services, Online Music Editing Services, Music Production Studio in Jaipur, Audio Editing Services in India, Custom Music Production, Music Mixing and Mastering Services, Wedding Dance Mashup Editing, Professional Wedding Choreography, Costume Designer in Jaipur, Audio Production Studio Jaipur, Online Audio Editing Worldwide",
-  },
-  "/wedding-music-editing": {
-    title: "Wedding Music Editing & Sangeet Mashup Services in India",
-    description:
-      "Wedding music editing, bride groom entry songs, sangeet mashups, couple dance tracks and family performance music preparation across India.",
-    keywords:
-      "wedding music editing India, sangeet mashup service, bride entry music editing, groom entry song editing, couple dance track India",
-  },
-  "/dance-performance-music-editing": {
-    title: "Dance Performance Music Editing Services in India",
-    description:
-      "Dance performance music editing for choreographers, schools, colleges, weddings and stage events with clean cuts, counts and cues.",
-    keywords:
-      "dance performance music editing, choreography track editing, school function music editing, college dance music editing, performance track editing India",
-  },
-  "/song-mixing-mashup": {
-    title: "Song Mixing & Mashup Editing Services in India",
-    description:
-      "Song mixing, mashup editing, multi-song joining, beat matching and clean transition services for weddings, dance and events across India.",
-    keywords:
-      "song mixing India, mashup editing service, song mashup maker India, beat matching service, music transition editing",
-  },
-  "/dj-remix": {
-    title: "DJ Remix & Song Re-Creation Services in India",
-    description:
-      "Custom DJ remix, song re-creation, performance remix and creative audio arrangement services for events and dance performances across India.",
-    keywords:
-      "DJ remix service India, song recreation India, custom remix service, dance remix editing, event remix track",
-  },
-  "/mix-mastering": {
-    title: "Mixing & Mastering Services in India | MR MUSIC MACK",
-    description:
-      "Mixing and mastering services for songs, performance tracks, remixes and custom audio with balanced loudness and polished final output.",
-    keywords:
-      "mixing mastering India, audio mastering service, music mixing service India, song mastering, final audio mastering",
-  },
-  "/custom-music-production": {
-    title: "Custom Music Production Services in India | MR MUSIC MACK",
-    description:
-      "Custom music production for performances, brand videos, content, events and creative projects across India.",
-    keywords:
-      "custom music production India, original music production, custom audio production, brand music production, event music production",
-  },
-  "/background-music-for-short-films": {
-    title: "Background Music for Short Films in India",
-    description:
-      "Original background music and custom scores for short films, short movies and cinematic projects across India.",
-    keywords:
-      "short film background music India, film score service, custom film score, cinematic background music India",
-  },
-  "/background-music-for-advertisements": {
-    title: "Advertisement Background Music Services in India",
-    description:
-      "Custom music for advertisements, promotional videos, brand campaigns and commercial content across India.",
-    keywords:
-      "advertisement music India, ad background music, promotional video music, brand campaign music India",
-  },
-  "/background-music-for-youtube": {
-    title: "YouTube Background Music Services in India",
-    description:
-      "Custom YouTube background music for intros, storytelling, educational videos, narration and branded channels across India.",
-    keywords:
-      "YouTube background music India, intro music service, storytelling background music, narration music India",
-  },
-  "/background-music-for-project-launches": {
-    title: "Project Launch Music Services in India",
-    description:
-      "Impactful project launch music for product reveals, business presentations, launch videos and corporate events across India.",
-    keywords:
-      "project launch music India, product reveal music, corporate launch music, presentation background music",
-  },
-};
-
-export default function PageContent({ path, query, onStart: startProject, siteContent }) {
+export default function PageContent({
+  path,
+  query,
+  onStart: startProject,
+  siteContent,
+}) {
   const policy = policyPages[path];
   const contentPage = siteContent?.pages?.[path];
   const service = contentPage
     ? { ...landingPages[path], ...contentPage }
     : landingPages[path];
-  const pagePublished = contentPage?.published !== false && !siteContent?.hiddenPages?.includes(path);
+  const pagePublished =
+    contentPage?.published !== false &&
+    !siteContent?.hiddenPages?.includes(path);
   const isHome = path === "/";
   const isStudio = path === "/the-studio";
   const isCollection = path === "/the-collection" || path === "/our-work";
@@ -165,67 +52,57 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
     "/lets-connect": "Let’s Connect",
     "/contact": "Start Your Project",
   };
-  const pageName = policy?.title || service?.name || pageNames[path] || "Page Not Found";
-  const seo = policy ? { title: `${policy.title} | MR MUSIC MACK`, description: policy.description } : seoByPath[path];
-  const serviceSeo = serviceSeoContent[path];
+  const pageName =
+    policy?.title || service?.name || pageNames[path] || "Page Not Found";
+  const seo = policy
+    ? {
+        title: `${policy.title} | MR MUSIC MACK`,
+        description: policy.description,
+      }
+    : seoByPath[canonicalPath(path)];
   const pageDescription = isHome
-    ? service?.description || seo?.description || "Jaipur-based music editing studio serving clients across India. Wedding and sangeet mashups, dance performance tracks, DJ remixes, background music and mix & mastering."
+    ? service?.description ||
+      seo?.description ||
+      "Jaipur-based music editing studio serving clients across India. Wedding and sangeet mashups, dance performance tracks, DJ remixes, background music and mix & mastering."
     : service?.description ||
       seo?.description ||
       "MR MUSIC MACK: music audio editing, mashups, DJ remixes, mix & mastering and custom performance tracks for weddings, events, schools and colleges in Jaipur.";
 
   const found =
-    pagePublished && (Boolean(policy) || Object.hasOwn(pageNames, path) || Object.hasOwn(landingPages, path) || Boolean(contentPage));
-  const siteUrl = (import.meta.env.VITE_SITE_URL || "https://mrmusicmack.com").replace(/\/$/, "");
-  const canonicalUrl = `${siteUrl}${path === "/" ? "" : path}`;
+    pagePublished &&
+    (Boolean(policy) ||
+      Object.hasOwn(pageNames, path) ||
+      Object.hasOwn(landingPages, path) ||
+      Boolean(contentPage));
+  const siteUrl = (
+    import.meta.env.VITE_SITE_URL || "https://mrmusicmack.com"
+  ).replace(/\/$/, "");
+  const canonicalUrl = `${siteUrl}${canonicalPath(path) === "/" ? "" : canonicalPath(path)}`;
   const socialImage = isChoreographer
     ? `${siteUrl}${choreographerHeroImage}`
     : isMusicEditing
       ? `${siteUrl}/main-service-cards/music-editing.jpg`
       : `${siteUrl}/logo.jpg`;
   const metaTitle = found
-    ? (service?.seoTitle || seo?.title || `${pageName} | MR MUSIC MACK`)
+    ? service?.seoTitle || seo?.title || `${pageName} | MR MUSIC MACK`
     : "Page Not Found | MR MUSIC MACK";
   const metaDescription = found
-    ? (service?.seoDescription || seo?.description || pageDescription)
+    ? service?.seoDescription || seo?.description || pageDescription
     : "This page is not available.";
-  const schema = found && policy
-    ? { "@context": "https://schema.org", "@type": "WebPage", name: pageName, description: metaDescription, url: canonicalUrl }
-    : found && isChoreographer
-    ? createChoreographerSchema(siteUrl, metaDescription)
-    : found
-    ? {
-        "@context": "https://schema.org",
-        "@type": isHome || isStudio ? "LocalBusiness" : isCollection ? "CollectionPage" : "Service",
-        name: isHome || isStudio ? "MR MUSIC MACK" : pageName,
+  const schema = found
+    ? createPageSchema({
+        siteUrl,
+        path: canonicalPath(path),
+        pageName,
         description: metaDescription,
-        url: canonicalUrl,
-        areaServed: ["Jaipur", "India", "Worldwide"],
-        provider: {
-          "@type": "LocalBusiness",
-          name: "MR MUSIC MACK",
-          telephone: "+91 98875 63201",
-          email: "mrmusicmack@gmail.com",
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: "Jaipur",
-            addressRegion: "Rajasthan",
-            addressCountry: "IN",
-          },
-        },
-        serviceType: isHome || isStudio
-          ? [
-              "Music Editing",
-              "Wedding Mashup Editing",
-              "DJ Remix",
-              "Background Music Production",
-              "Choreographer Services",
-              "Costume Design",
-            ]
-          : pageName,
-      }
+        settings: siteContent?.settings,
+        policy: Boolean(policy),
+        choreographer: isChoreographer
+          ? createChoreographerSchema(siteUrl, metaDescription)
+          : null,
+      })
     : null;
-  const schemaJson = JSON.stringify(schema);
+  const schemaJson = JSON.stringify(schema).replace(/</g, "\\u003c");
 
   return (
     <>
@@ -233,8 +110,22 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
         {found && <link rel="canonical" href={canonicalUrl} />}
-        {found && <meta name="robots" content={policy?.pending ? "noindex, follow" : "index, follow, max-image-preview:large"} />}
-        {found && <meta property="og:type" content={isHome ? "website" : "article"} />}
+        <meta
+          name="robots"
+          content={
+            !found || policy?.pending
+              ? "noindex, follow"
+              : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+          }
+        />
+        {found && <meta property="og:type" content="website" />}
+        {found && (
+          <meta
+            property="og:site_name"
+            content={siteContent?.settings?.brandName || "MR MUSIC MACK"}
+          />
+        )}
+        {found && <meta property="og:locale" content="en_IN" />}
         {found && <meta property="og:title" content={metaTitle} />}
         {found && <meta property="og:description" content={metaDescription} />}
         {found && <meta property="og:url" content={canonicalUrl} />}
@@ -253,14 +144,14 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
         {found && <meta name="twitter:title" content={metaTitle} />}
         {found && <meta name="twitter:description" content={metaDescription} />}
         {found && <meta name="twitter:image" content={socialImage} />}
-        {found && (serviceSeo?.keywords?.length || seo?.keywords) && (
-          <meta
-            name="keywords"
-            content={serviceSeo?.keywords?.join(", ") || seo.keywords}
-          />
+        {found && seo?.keywords && (
+          <meta name="keywords" content={seo.keywords} />
         )}
         {schema && (
-          <script type="application/ld+json" data-page-seo={isChoreographer ? "choreographer" : undefined}>
+          <script
+            type="application/ld+json"
+            data-page-seo={isChoreographer ? "choreographer" : undefined}
+          >
             {schemaJson}
           </script>
         )}
@@ -277,7 +168,9 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
             <p className="eyebrow">404 / A LITTLE OFFBEAT</p>
             <h1>This page is not available.</h1>
             <p>Let's get you back to the music.</p>
-            <Link className="button primary" to="/">Back to home ↗</Link>
+            <Link className="button primary" to="/">
+              Back to home ↗
+            </Link>
           </section>
         ) : policy ? (
           <PolicyPage path={path} />
@@ -296,16 +189,45 @@ export default function PageContent({ path, query, onStart: startProject, siteCo
         )}
       </Suspense>
 
-      {found && !policy && !isHome && !isCollection && <ManagedPageMedia page={contentPage} excludeAudio={isMusicEditing || path === "/background-music" || Boolean(landingPages[path] && path !== "/choreographer" && path !== "/costume-design")} />}
+      {found && !policy && !isHome && !isCollection && (
+        <ManagedPageMedia
+          page={contentPage}
+          excludeAudio={
+            isMusicEditing ||
+            path === "/background-music" ||
+            Boolean(
+              landingPages[path] &&
+                path !== "/choreographer" &&
+                path !== "/costume-design",
+            )
+          }
+        />
+      )}
 
       {found && !policy && !isStudio && !isCollection && (
         <ProjectCTA
           onStart={startProject}
-          type={isCostumeDesign ? "Costume Design" : isChoreographer ? "Choreographer" : "Music Editing"}
-          need={isCostumeDesign ? "Costume Design" : isChoreographer ? "Choreography" : ""}
+          type={
+            isCostumeDesign
+              ? "Costume Design"
+              : isChoreographer
+                ? "Choreographer"
+                : "Music Editing"
+          }
+          need={
+            isCostumeDesign
+              ? "Costume Design"
+              : isChoreographer
+                ? "Choreography"
+                : ""
+          }
         />
       )}
-      {found && isHome && siteContent?.home?.sections?.serviceGallery !== false && <ServiceGallery siteContent={siteContent} />}
+      {found &&
+        isHome &&
+        siteContent?.home?.sections?.serviceGallery !== false && (
+          <ServiceGallery siteContent={siteContent} />
+        )}
     </>
   );
 }

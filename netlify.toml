@@ -1,4 +1,22 @@
 [[redirects]]
+  from = "/about"
+  to = "/the-studio"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/contact"
+  to = "/lets-connect"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/our-work"
+  to = "/the-collection"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "/404.html"
+  status = 404

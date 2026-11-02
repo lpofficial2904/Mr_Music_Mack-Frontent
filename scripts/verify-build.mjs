@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
+import { routeAliases, seoPages } from "../src/seo.js";
 
 const root = fileURLToPath(new URL("../dist/", import.meta.url));
 const pages = [];
@@ -25,8 +26,11 @@ for (const file of pages) {
     `One description: ${file}`,
   );
   const title = html.match(/<title>(.*?)<\/title>/s)[1];
-  assert.ok(!titles.has(title), `Unique title: ${file}`);
-  titles.add(title);
+  const pagePath = `/${file.slice(root.length).replaceAll("\\", "/").replace(/\/?index\.html$/, "")}`.replace(/\/$/, "") || "/";
+  if (!routeAliases[pagePath]) {
+    assert.ok(!titles.has(title), `Unique title: ${file}`);
+    titles.add(title);
+  }
   assert.ok(html.includes("+91 98875 63201"));
   assert.ok(html.includes("mrmusicmack@gmail.com"));
   assert.ok(!html.includes("919876543210"));
@@ -138,6 +142,30 @@ const sitemap = readFileSync(join(root, "sitemap.xml"), "utf8");
 const robots = readFileSync(join(root, "robots.txt"), "utf8");
 assert.ok(sitemap.includes(`${siteUrl}/choreographer`));
 assert.ok(robots.includes(`${siteUrl}/sitemap.xml`));
+const missingPage = readFileSync(join(root, "404.html"), "utf8");
+assert.ok(missingPage.includes('name="robots" content="noindex, follow"'));
+assert.ok(!missingPage.includes('rel="canonical"'));
+for (const [path, seo] of Object.entries(seoPages)) {
+  const html = readFileSync(join(root, path, "index.html"), "utf8");
+  const head = html.match(/<head>([\s\S]*?)<\/head>/)[1];
+  const escape = value => value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#x27;");
+  assert.ok(head.includes(escape(seo.title)), `Service title: ${path}`);
+  assert.ok(head.includes(escape(seo.description)), `Service description: ${path}`);
+  assert.equal((head.match(/rel="canonical"/g) || []).length, 1, `One canonical: ${path}`);
+  assert.ok(head.includes('name="keywords"'), `Service keywords: ${path}`);
+  const schema = JSON.parse(html.match(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/)[1]);
+  assert.ok(schema["@graph"].some(node => node["@type"] === "ProfessionalService" && node["@id"]), `Business entity: ${path}`);
+  if (path !== "/") assert.ok(schema["@graph"].some(node => node["@type"] === "BreadcrumbList"), `Breadcrumbs: ${path}`);
+  if (path === "/lets-connect") {
+    assert.ok(schema["@graph"].some(node => node["@type"] === "ContactPage"));
+    assert.ok(!schema["@graph"].some(node => node["@type"] === "Service"));
+  }
+}
+for (const [alias, canonical] of Object.entries(routeAliases)) {
+  assert.ok(!sitemap.includes(`<loc>${siteUrl}${alias}</loc>`), `Alias excluded: ${alias}`);
+  const html = readFileSync(join(root, alias, "index.html"), "utf8");
+  assert.ok(html.includes(`rel="canonical" href="${siteUrl}${canonical}"`), `Alias canonical: ${alias}`);
+}
 for (const name of readdirSync(join(root, "samples"))) {
   const audio = readFileSync(join(root, "samples", name));
   assert.equal(audio.toString("ascii", 0, 4), "RIFF");
