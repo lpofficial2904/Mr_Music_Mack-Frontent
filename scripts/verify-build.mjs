@@ -45,7 +45,8 @@ const choreographerHtml = readFileSync(
   join(root, "choreographer", "index.html"),
   "utf8",
 );
-const choreographerHead = choreographerHtml.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
+const choreographerHead =
+  choreographerHtml.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
 assert.ok(
   choreographerHead.includes(
     "Wedding &amp; Sangeet Choreographer Jaipur | MR MUSIC MACK",
@@ -65,12 +66,17 @@ assert.equal(
 );
 assert.ok(choreographerHead.includes('property="og:image"'));
 assert.ok(choreographerHead.includes('name="twitter:image"'));
-const choreographerSchemaText = choreographerHead.match(
+const choreographerSchemaText = choreographerHtml.match(
   /<script type="application\/ld\+json" data-page-seo="choreographer">([\s\S]*?)<\/script>/,
 )?.[1];
-assert.ok(choreographerSchemaText, "Choreographer structured data is in the head");
+assert.ok(
+  choreographerSchemaText,
+  "Choreographer structured data is present in the document",
+);
 const choreographerSchema = JSON.parse(choreographerSchemaText);
-assert.ok(choreographerSchema["@graph"].some((item) => item["@type"] === "Service"));
+assert.ok(
+  choreographerSchema["@graph"].some((item) => item["@type"] === "Service"),
+);
 assert.ok(
   choreographerSchema["@graph"].some(
     (item) => item["@type"] === "BreadcrumbList",
@@ -79,7 +85,11 @@ assert.ok(
 const faqSchema = choreographerSchema["@graph"].find(
   (item) => item["@type"] === "FAQPage",
 );
-assert.equal(faqSchema?.mainEntity?.length, 10, "FAQ schema matches visible FAQs");
+assert.equal(
+  faqSchema?.mainEntity?.length,
+  10,
+  "FAQ schema matches visible FAQs",
+);
 assert.ok(
   choreographerHtml.includes(
     "<h1>Wedding &amp; Sangeet Choreographer in Jaipur</h1>",
@@ -91,8 +101,14 @@ assert.ok(
     "Every Beat Has a Story. Every Move Creates a Memory.",
   ),
 );
-assert.ok(choreographerHtml.includes("Explore Our Wedding &amp; Dance Performance Projects."));
-assert.ok(choreographerHtml.includes("Illustrative thumbnail for Bride Expressions"));
+assert.ok(
+  choreographerHtml.includes(
+    "Explore Our Wedding &amp; Dance Performance Projects.",
+  ),
+);
+assert.ok(
+  choreographerHtml.includes("Illustrative thumbnail for Bride Expressions"),
+);
 for (const filename of [
   "bride-expressions.mp4",
   "couple-chemistry.mp4",
@@ -108,7 +124,11 @@ for (const filename of [
     `Featured choreography video asset exists: ${filename}`,
   );
 }
-assert.ok(choreographerHtml.includes("How much does wedding choreography cost in Jaipur?"));
+assert.ok(
+  choreographerHtml.includes(
+    "How much does wedding choreography cost in Jaipur?",
+  ),
+);
 const canonicalUrl = choreographerHead.match(
   /<link rel="canonical" href="([^"]+)"/,
 )?.[1];

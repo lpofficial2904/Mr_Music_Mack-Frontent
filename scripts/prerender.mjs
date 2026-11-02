@@ -3,27 +3,28 @@ import { render } from "../.prerender/entry-server.js";
 import { landingPages } from "../src/siteData.js";
 import { policyPages } from "../src/policyPages.js";
 
-const routes = [...new Set([
-  "/",
-  "/music-editing",
-  "/background-music",
-  "/services",
-  "/wedding-performance-music",
-  "/the-collection",
-  "/the-studio",
-  "/lets-connect",
-  "/our-work",
-  "/about",
-  "/contact",
-  ...Object.keys(landingPages),
-  ...Object.keys(policyPages),
-])];
+const routes = [
+  ...new Set([
+    "/",
+    "/music-editing",
+    "/background-music",
+    "/services",
+    "/wedding-performance-music",
+    "/the-collection",
+    "/the-studio",
+    "/lets-connect",
+    "/our-work",
+    "/about",
+    "/contact",
+    ...Object.keys(landingPages),
+    ...Object.keys(policyPages),
+  ]),
+];
 const dist = new URL("../dist/", import.meta.url);
 const template = await readFile(new URL("index.html", dist), "utf8");
-const siteUrl = (process.env.VITE_SITE_URL || "https://mrmusicmack.com").replace(
-  /\/$/,
-  "",
-);
+const siteUrl = (
+  process.env.VITE_SITE_URL || "https://mrmusicmack.com"
+).replace(/\/$/, "");
 const defaultHeadPattern =
   /<title>[\s\S]*?<\/title>\s*<meta\s+name="description"[^>]*\/>/;
 
@@ -34,18 +35,18 @@ for (const route of routes) {
   const fallbackTitle = markup.match(/<title>[\s\S]*?<\/title>/)?.[0] || "";
   const fallbackDescription =
     markup.match(/<meta\s+name="description"[^>]*\/>/)?.[0] || "";
-  let cleanMarkup = markup.replace(fallbackTitle, "").replace(fallbackDescription, "");
+  let cleanMarkup = markup
+    .replace(fallbackTitle, "")
+    .replace(fallbackDescription, "");
   const bodyHeadTags = [];
+  // React 19 hoists metadata, but inline JSON-LD stays in its rendered position.
+  // Moving that script to <head> breaks hydration of the surrounding boundary.
   cleanMarkup = cleanMarkup
     .replace(/<meta\b[^>]*\/>/g, (tag) => {
       bodyHeadTags.push(tag);
       return "";
     })
     .replace(/<link\s+rel="canonical"[^>]*\/>/g, (tag) => {
-      bodyHeadTags.push(tag);
-      return "";
-    })
-    .replace(/<script\s+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g, (tag) => {
       bodyHeadTags.push(tag);
       return "";
     });
@@ -60,8 +61,9 @@ for (const route of routes) {
         .filter(Boolean)
         .join("\n    ")
     : [fallbackTitle, fallbackDescription].filter(Boolean).join("\n    ");
-  const headTags = [...new Set([helmetHead, ...bodyHeadTags].filter(Boolean))]
-    .join("\n    ");
+  const headTags = [
+    ...new Set([helmetHead, ...bodyHeadTags].filter(Boolean)),
+  ].join("\n    ");
   const html = template
     .replace(defaultHeadPattern, headTags)
     .replace('<div id="root"></div>', `<div id="root">${cleanMarkup}</div>`);

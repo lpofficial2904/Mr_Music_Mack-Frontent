@@ -4,32 +4,103 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createServer } from "vite";
 import { readFile } from "node:fs/promises";
 
-const apiSource = await readFile(new URL("../src/api.js", import.meta.url), "utf8");
+const apiSource = await readFile(
+  new URL("../src/api.js", import.meta.url),
+  "utf8",
+);
 for (const [env, expected] of [
   [{ DEV: false }, "https://admin.mrmusicmack.com/media/test.mp3"],
-  [{ DEV: false, VITE_API_BASE_URL: "https://backend.example/api" }, "https://backend.example/media/test.mp3"],
-  [{ DEV: false, VITE_MEDIA_BASE_URL: "https://cdn.example/" }, "https://cdn.example/media/test.mp3"],
+  [
+    { DEV: false, VITE_API_BASE_URL: "https://backend.example/api" },
+    "https://backend.example/media/test.mp3",
+  ],
+  [
+    { DEV: false, VITE_MEDIA_BASE_URL: "https://cdn.example/" },
+    "https://cdn.example/media/test.mp3",
+  ],
   [{ DEV: true }, "/media/test.mp3"],
 ]) {
   const code = apiSource.replaceAll("import.meta.env", JSON.stringify(env));
-  const { mediaUrl } = await import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+  const { mediaUrl } = await import(
+    `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`
+  );
   assert.equal(mediaUrl("/media/test.mp3"), expected);
-  assert.equal(mediaUrl("/main-service-cards/music-editing.jpg"), "/main-service-cards/music-editing.jpg");
+  assert.equal(
+    mediaUrl("/main-service-cards/music-editing.jpg"),
+    "/main-service-cards/music-editing.jpg",
+  );
 }
 
-const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" });
+for (const [env, hostname, expected] of [
+  [{ DEV: false }, "www.mrmusicmack.com", "/api/briefs"],
+  [{ DEV: false }, "mrmusicmack.com", "/api/briefs"],
+  [
+    { DEV: false, VITE_API_BASE_URL: "https://www.mrmusicmack.com/api" },
+    "mrmusicmack.com",
+    "/api/briefs",
+  ],
+  [
+    { DEV: false, VITE_API_BASE_URL: "https://backend.example/api" },
+    "www.mrmusicmack.com",
+    "https://backend.example/api/briefs",
+  ],
+  [{ DEV: false }, "preview.example", "https://mrmusicmack.com/api/briefs"],
+  [{ DEV: true }, "localhost", "/api/briefs"],
+]) {
+  globalThis.window = { location: { hostname } };
+  try {
+    const code = apiSource.replaceAll("import.meta.env", JSON.stringify(env));
+    const { apiUrl } = await import(
+      `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`
+    );
+    assert.equal(apiUrl("/api/briefs"), expected);
+  } finally {
+    delete globalThis.window;
+  }
+}
+
+const vite = await createServer({
+  server: { middlewareMode: true },
+  appType: "custom",
+});
 try {
-  const { default: OurWork } = await vite.ssrLoadModule("/src/components/OurWork.jsx");
-  const { default: MainServiceCards } = await vite.ssrLoadModule("/src/components/MainServiceCards.jsx");
+  const { default: OurWork } = await vite.ssrLoadModule(
+    "/src/components/OurWork.jsx",
+  );
+  const { default: MainServiceCards } = await vite.ssrLoadModule(
+    "/src/components/MainServiceCards.jsx",
+  );
   const { MemoryRouter } = await vite.ssrLoadModule("react-router-dom");
   const media = [
-    { type: "audio", url: "/media/test.mp3", title: "Published audio test", poster: "/media/cover.png", enabled: true },
-    { type: "audio", url: "/media/hidden.mp3", title: "Hidden audio test", enabled: false },
-    { type: "image", url: "/media/photo.png", title: "Published photo test", enabled: true },
+    {
+      type: "audio",
+      url: "/media/test.mp3",
+      title: "Published audio test",
+      poster: "/media/cover.png",
+      enabled: true,
+    },
+    {
+      type: "audio",
+      url: "/media/hidden.mp3",
+      title: "Hidden audio test",
+      enabled: false,
+    },
+    {
+      type: "image",
+      url: "/media/photo.png",
+      title: "Published photo test",
+      enabled: true,
+    },
   ];
-  const collection = (managedMedia) => renderToStaticMarkup(React.createElement(OurWork, {
-    collectionPage: true, managedMedia, managedProjects: [], managedReels: [],
-  }));
+  const collection = (managedMedia) =>
+    renderToStaticMarkup(
+      React.createElement(OurWork, {
+        collectionPage: true,
+        managedMedia,
+        managedProjects: [],
+        managedReels: [],
+      }),
+    );
   const published = collection(media);
   assert.match(published, /Published audio test/);
   assert.match(published, /\/media\/test.mp3/);
@@ -38,13 +109,30 @@ try {
   assert.doesNotMatch(published, /Hidden audio test/);
   assert.doesNotMatch(collection([]), /Published audio test|\/media\/test.mp3/);
 
-  const cardHtml = renderToStaticMarkup(React.createElement(MemoryRouter, {},
-    React.createElement(MainServiceCards, { siteContent: { home: { mainServiceCards: [
-      { title: "Updated card", path: "/music-editing", image: "/media/card.png" },
-    ] } } })));
+  const cardHtml = renderToStaticMarkup(
+    React.createElement(
+      MemoryRouter,
+      {},
+      React.createElement(MainServiceCards, {
+        siteContent: {
+          home: {
+            mainServiceCards: [
+              {
+                title: "Updated card",
+                path: "/music-editing",
+                image: "/media/card.png",
+              },
+            ],
+          },
+        },
+      }),
+    ),
+  );
   assert.match(cardHtml, /Updated card/);
   assert.match(cardHtml, /\/media\/card.png/);
-  console.log("PASS: published collection media renders, hidden/removed audio stays hidden, and updated service-card images render.");
+  console.log(
+    "PASS: published collection media renders, hidden/removed audio stays hidden, and updated service-card images render.",
+  );
 } finally {
   await vite.close();
 }

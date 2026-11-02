@@ -35,3 +35,15 @@ Uploaded website media uses `VITE_MEDIA_BASE_URL` (default:
 `https://admin.mrmusicmack.com`). The public website serves static files while the
 admin backend owns `/media`. `VITE_API_BASE_URL` continues to select the content API.
 For a custom backend, uploaded media defaults to that API origin unless overridden.
+
+Production booking requests stay on the current public origin for both
+`mrmusicmack.com` and `www.mrmusicmack.com`. An explicitly configured external
+backend still uses its configured URL. The booking API supports CORS preflight
+and POST responses from both public HTTPS origins.
+
+To release the booking and hydration fixes, upload the complete contents of
+`dist/` after `npm run build` (including every page's `index.html` and the matching
+`assets/` directory). Also deploy the updated backend `Routes/briefRoutes.js` and
+restart the backend Node process. Keep the server's environment settings and
+customer data. Purge any hosting/CDN HTML cache so HTML and JS come from the same
+build. Check `/lets-connect` and `/lets-connect/` on both public hostnames.
