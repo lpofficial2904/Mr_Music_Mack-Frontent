@@ -12981,3 +12981,8 @@ body:has(.reference-hero) .site-navbar-actions .nav-cta {
 
 .footer-policy-links { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 22px 0; }
 .footer-policy-links a { font-size: 14px; }
+
+.service-question { padding: 16px 0; border-bottom: 1px solid rgba(216,180,95,.25); }
+.service-question summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
+.service-question p { margin-top: 12px; }
+.service-question + .button { margin-top: 24px; }

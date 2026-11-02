@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { apiUrl, hasApiBackend } from "../api";
 import { projectTypes, requirements } from "../siteData";
 import { WhatsAppIcon } from "./Icons";
+import { trackLead, trackContact } from "../analytics";
 
 const briefProfiles = {
   "Music Editing": {
@@ -244,9 +245,10 @@ export default function ProjectBriefModal({
           result.error ||
             "Submission is unavailable right now. Your details are still here; continue on WhatsApp or try again.",
         );
+      trackLead(result.reference, fields.projectType);
       setStatus({
         success: true,
-        text: `Your requirement has been sent to us on WhatsApp and email. Reference: ${result.reference}.`,
+        text: `Your project brief has been received. Our team will contact you about next steps. Reference: ${result.reference}.`,
       });
       toast.custom(
         (toastState) => (
@@ -332,6 +334,7 @@ export default function ProjectBriefModal({
         ? [`Reference file: ${file.name} (I will attach this in WhatsApp).`]
         : []),
     ].join("\n");
+    trackContact("whatsapp", type);
     window.open(
       `https://wa.me/919887563201?text=${encodeURIComponent(message)}`,
       "_blank",

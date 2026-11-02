@@ -67,7 +67,7 @@ export default function CollectionMediaGroup({ categoryName, items, onPlay }) {
                 {item.type === "video" ? <video
                   ref={(node) => { if (node) players.current.set(key, node); else players.current.delete(key); }}
                   src={mediaUrl(item.url)} poster={mediaUrl(item.poster) || undefined}
-                  playsInline controls={isPlaying} preload="metadata"
+                  playsInline controls={isPlaying} preload={item.poster ? "none" : "metadata"}
                   onPlay={() => { onPlay?.(); setPlaying(key); }}
                   onPause={() => setPlaying((current) => current === key ? "" : current)}
                   onEnded={() => setPlaying("")} /> : <img src={mediaUrl(item.url)} alt={title} loading="lazy" />}

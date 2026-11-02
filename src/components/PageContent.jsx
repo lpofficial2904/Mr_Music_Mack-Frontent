@@ -8,6 +8,9 @@ import ManagedPageMedia from "./ManagedPageMedia";
 import { policyPages } from "../policyPages";
 import { seoPages as seoByPath, canonicalPath } from "../seo";
 import { createPageSchema } from "../seoSchema";
+import { enquiryContext } from "../seoStrategy";
+const ServiceDecisionGuide = lazy(() => import("./ServiceDecisionGuide"));
+const ServiceDirectory = lazy(() => import("./ServiceDirectory"));
 
 const choreographerHeroImage =
   "/costume-gallery/costume-wedding-sangeet-performance.jpg";
@@ -54,6 +57,7 @@ export default function PageContent({
   };
   const pageName =
     policy?.title || service?.name || pageNames[path] || "Page Not Found";
+  const context = enquiryContext(canonicalPath(path));
   const seo = policy
     ? {
         title: `${policy.title} | MR MUSIC MACK`,
@@ -82,7 +86,11 @@ export default function PageContent({
     ? `${siteUrl}${choreographerHeroImage}`
     : isMusicEditing
       ? `${siteUrl}/main-service-cards/music-editing.jpg`
-      : `${siteUrl}/logo.jpg`;
+      : isCostumeDesign
+        ? `${siteUrl}/main-service-cards/costume-design.jpg`
+        : path.startsWith("/background-music")
+          ? `${siteUrl}/main-service-cards/background-music.jpg`
+          : `${siteUrl}/logo.jpg`;
   const metaTitle = found
     ? service?.seoTitle || seo?.title || `${pageName} | MR MUSIC MACK`
     : "Page Not Found | MR MUSIC MACK";
@@ -95,6 +103,7 @@ export default function PageContent({
         path: canonicalPath(path),
         pageName,
         description: metaDescription,
+        socialImage,
         settings: siteContent?.settings,
         policy: Boolean(policy),
         choreographer: isChoreographer
@@ -144,6 +153,12 @@ export default function PageContent({
         {found && <meta name="twitter:title" content={metaTitle} />}
         {found && <meta name="twitter:description" content={metaDescription} />}
         {found && <meta name="twitter:image" content={socialImage} />}
+        {found && (
+          <meta
+            name="twitter:image:alt"
+            content={`${pageName} at MR MUSIC MACK`}
+          />
+        )}
         {found && seo?.keywords && (
           <meta name="keywords" content={seo.keywords} />
         )}
@@ -156,6 +171,11 @@ export default function PageContent({
           </script>
         )}
       </Helmet>
+      {found && (isContact || isCostumeDesign || policy || isStudio) && (
+        <nav className="wrap breadcrumb" aria-label="Breadcrumb">
+          <Link to="/">Home</Link> / <span aria-current="page">{pageName}</span>
+        </nav>
+      )}
       <Suspense
         fallback={
           <div className="page-loading wrap" role="status">
@@ -188,6 +208,25 @@ export default function PageContent({
           />
         )}
       </Suspense>
+      <Suspense fallback={null}>
+        {found &&
+          ["/services", "/music-editing", "/background-music"].includes(
+            path,
+          ) && <ServiceDirectory path={canonicalPath(path)} />}
+        {found &&
+          !policy &&
+          !isHome &&
+          !isContact &&
+          !isStudio &&
+          !isCollection &&
+          !isChoreographer &&
+          path !== "/services" && (
+            <ServiceDecisionGuide
+              path={canonicalPath(path)}
+              onStart={startProject}
+            />
+          )}
+      </Suspense>
 
       {found && !policy && !isHome && !isCollection && (
         <ManagedPageMedia
@@ -207,20 +246,9 @@ export default function PageContent({
       {found && !policy && !isStudio && !isCollection && (
         <ProjectCTA
           onStart={startProject}
-          type={
-            isCostumeDesign
-              ? "Costume Design"
-              : isChoreographer
-                ? "Choreographer"
-                : "Music Editing"
-          }
-          need={
-            isCostumeDesign
-              ? "Costume Design"
-              : isChoreographer
-                ? "Choreography"
-                : ""
-          }
+          type={context.type}
+          need={context.need}
+          label={context.cta}
         />
       )}
       {found &&

@@ -37,7 +37,7 @@ export default function ManagedPageMedia({ page, excludeAudio = false }) {
               <div className="managed-media-visual">
                 <div className="managed-media-labels"><span>{mediaLabels[item.type] || "Media"}</span><span>{String(index + 1).padStart(2, "0")}</span></div>
                 {item.type === "video" ? (
-                  <video src={mediaUrl(item.url)} poster={mediaUrl(item.poster) || undefined} controls playsInline preload="metadata" onPlay={(event) => activate(event.currentTarget)} />
+                  <video src={mediaUrl(item.url)} poster={mediaUrl(item.poster) || undefined} controls playsInline preload={item.poster ? "none" : "metadata"} onPlay={(event) => activate(event.currentTarget)} />
                 ) : (
                   <img src={mediaUrl(item.type === "audio" ? item.poster || "/main-service-cards/background-music.jpg" : item.url)} alt={item.type === "audio" ? "" : item.title || page.name || "Page media"} loading="lazy" />
                 )}

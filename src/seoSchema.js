@@ -8,6 +8,7 @@ export function createPageSchema({
   settings,
   policy,
   choreographer,
+  socialImage,
 }) {
   const url = `${siteUrl}${path === "/" ? "" : path}`;
   const businessId = `${siteUrl}/#business`;
@@ -23,6 +24,7 @@ export function createPageSchema({
     telephone: settings?.phone || "+919887563201",
     email: settings?.email || "mrmusicmack@gmail.com",
     logo: new URL(settings?.logo || "/brand-logo.svg", siteUrl).href,
+    hasOfferCatalog: { "@id": `${siteUrl}/#services` },
     address: {
       "@type": "PostalAddress",
       streetAddress: settings?.address || "Shyam Nagar, Sodala",
@@ -71,6 +73,10 @@ export function createPageSchema({
       inLanguage: "en-IN",
     },
   ];
+  if (socialImage) {
+    graph.push({ "@type": "ImageObject", "@id": `${url}#primaryimage`, contentUrl: socialImage, caption: pageName });
+    graph.find(node => node["@id"] === `${url}#webpage`).primaryImageOfPage = { "@id": `${url}#primaryimage` };
+  }
   if (path !== "/")
     graph.push({
       "@type": "BreadcrumbList",

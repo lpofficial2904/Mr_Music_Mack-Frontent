@@ -6,6 +6,8 @@ import PageContent from "./PageContent";
 import { MobileProjectCTA } from "./ProjectCTA";
 import VideoPlaybackGuard from "./VideoPlaybackGuard";
 import { apiUrl, hasApiBackend } from "../api";
+import { enquiryContext } from "../seoStrategy";
+import { installContactTracking, trackEvent } from "../analytics";
 
 const ProjectBriefModal = lazy(() => import("./ProjectBriefModal"));
 
@@ -13,6 +15,7 @@ export default function SiteLayout() {
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const path = pathname.replace(/\/$/, "") || "/";
+  useEffect(() => installContactTracking(() => enquiryContext(path).type), [path]);
   const query = new URLSearchParams(search);
   const [brief, setBrief] = useState(null);
   const [siteContent, setSiteContent] = useState(null);
@@ -92,6 +95,7 @@ export default function SiteLayout() {
   }, [siteContent]);
 
   function startProject(type = "Music Editing", mood = "", need = "") {
+    trackEvent("service_enquiry", { service: type });
     setBrief({ type, mood, need });
   }
 
@@ -105,22 +109,8 @@ export default function SiteLayout() {
   }
 
   function startPageProject() {
-    const isCostumeDesign = path === "/costume-design";
-    const isChoreographer = path === "/choreographer";
-
-    startProject(
-      isCostumeDesign
-        ? "Costume Design"
-        : isChoreographer
-          ? "Choreographer"
-          : "Music Editing",
-      "",
-      isCostumeDesign
-        ? "Costume Design"
-        : isChoreographer
-          ? "Choreography"
-          : "",
-    );
+    const context = enquiryContext(path);
+    startProject(context.type, "", context.need);
   }
 
   return (

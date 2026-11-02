@@ -1,31 +1,24 @@
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { render } from "../.prerender/entry-server.js";
-import { landingPages } from "../src/siteData.js";
+import { publicRoutes } from "../src/publicRoutes.js";
 import { policyPages } from "../src/policyPages.js";
 import { routeAliases } from "../src/seo.js";
+import { loadEnv } from "vite";
 
-const routes = [
-  ...new Set([
-    "/",
-    "/music-editing",
-    "/background-music",
-    "/services",
-    "/wedding-performance-music",
-    "/the-collection",
-    "/the-studio",
-    "/lets-connect",
-    "/our-work",
-    "/about",
-    "/contact",
-    ...Object.keys(landingPages),
-    ...Object.keys(policyPages),
-  ]),
-];
+const routes = publicRoutes;
 const dist = new URL("../dist/", import.meta.url);
 const template = await readFile(new URL("index.html", dist), "utf8");
 const siteUrl = (
-  process.env.VITE_SITE_URL || "https://mrmusicmack.com"
+  process.env.VITE_SITE_URL ||
+  loadEnv("production", process.cwd(), "VITE_").VITE_SITE_URL ||
+  "https://mrmusicmack.com"
 ).replace(/\/$/, "");
+if (
+  new URL(siteUrl).protocol !== "https:" ||
+  new URL(siteUrl).pathname !== "/"
+) {
+  throw new Error("VITE_SITE_URL must be an HTTPS origin without a path.");
+}
 const defaultHeadPattern =
   /<title>[\s\S]*?<\/title>\s*<meta\s+name="description"[^>]*\/>/;
 

@@ -14,6 +14,7 @@ export default function ProjectCTA({
   onStart: startProject,
   type = "Music Editing",
   need = "",
+  label,
 }) {
   const costumeDesign = type === "Costume Design";
   return (
@@ -47,7 +48,7 @@ export default function ProjectCTA({
         </m.p>
         <m.div variants={ctaReveal} className="button-row">
           <button className="button primary" onClick={() => startProject(type, "", need)}>
-            {costumeDesign ? "Discuss costume design ↗" : "Start your project ↗"}
+            {label || (costumeDesign ? "Discuss costume design ↗" : "Start your project ↗")}
           </button>
           <a
             className="button text-button"

@@ -1,3 +1,4 @@
+import { seoStrategy } from "../seoStrategy";
 import { useEffect, useRef, useState } from "react";
 import OurWork from "../components/OurWork";
 import { Link } from "react-router-dom";
@@ -1376,7 +1377,7 @@ export default function ServicePage({
           </p>
           <p className="eyebrow">MR MUSIC MACK / JAIPUR</p>
           <h1>
-            {isChoreographer ? service?.title || pageName : service?.name || managedPage?.title || pageName}
+            {isChoreographer ? service?.title || pageName : seoStrategy[path]?.h1 || service?.name || managedPage?.title || pageName}
             {!isChoreographer && <span className="coral">.</span>}
           </h1>
           {isChoreographer && (
