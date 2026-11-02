@@ -1,0 +1,30 @@
+{
+  "status": 200,
+  "livePublicCmsRoutes": [
+    "/",
+    "/music-editing",
+    "/background-music",
+    "/choreographer",
+    "/services",
+    "/wedding-performance-music",
+    "/the-collection",
+    "/the-studio",
+    "/lets-connect",
+    "/our-work",
+    "/about",
+    "/contact",
+    "/background-music-for-short-films",
+    "/background-music-for-advertisements",
+    "/background-music-for-youtube",
+    "/background-music-for-project-launches",
+    "/wedding-music-editing",
+    "/dance-performance-music-editing",
+    "/song-mixing-mashup",
+    "/dj-remix",
+    "/mix-mastering",
+    "/custom-music-production",
+    "/costume-design"
+  ],
+  "additionalLiveRoutes": [],
+  "note": "Only public route keys retained; no settings or content values stored."
+}

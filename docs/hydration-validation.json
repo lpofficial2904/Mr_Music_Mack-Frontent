@@ -1,0 +1,167 @@
+{
+  "environment": "Simulated DOM with browser/media API stubs; not a real-browser performance or visual test",
+  "results": [
+    {
+      "route": "/",
+      "passed": true,
+      "output": "{\"route\":\"/\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/music-editing",
+      "passed": true,
+      "output": "{\"route\":\"/music-editing\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/background-music",
+      "passed": true,
+      "output": "{\"route\":\"/background-music\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/choreographer",
+      "passed": true,
+      "output": "{\"route\":\"/choreographer\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/costume-design",
+      "passed": true,
+      "output": "{\"route\":\"/costume-design\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/services",
+      "passed": true,
+      "output": "{\"route\":\"/services\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/wedding-performance-music",
+      "passed": true,
+      "output": "{\"route\":\"/wedding-performance-music\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/wedding-music-editing",
+      "passed": true,
+      "output": "{\"route\":\"/wedding-music-editing\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/dance-performance-music-editing",
+      "passed": true,
+      "output": "{\"route\":\"/dance-performance-music-editing\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/song-mixing-mashup",
+      "passed": true,
+      "output": "{\"route\":\"/song-mixing-mashup\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/dj-remix",
+      "passed": true,
+      "output": "{\"route\":\"/dj-remix\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/mix-mastering",
+      "passed": true,
+      "output": "{\"route\":\"/mix-mastering\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/custom-music-production",
+      "passed": true,
+      "output": "{\"route\":\"/custom-music-production\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/background-music-for-short-films",
+      "passed": true,
+      "output": "{\"route\":\"/background-music-for-short-films\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/background-music-for-advertisements",
+      "passed": true,
+      "output": "{\"route\":\"/background-music-for-advertisements\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/background-music-for-youtube",
+      "passed": true,
+      "output": "{\"route\":\"/background-music-for-youtube\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/background-music-for-project-launches",
+      "passed": true,
+      "output": "{\"route\":\"/background-music-for-project-launches\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/the-collection",
+      "passed": true,
+      "output": "{\"route\":\"/the-collection\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/the-studio",
+      "passed": true,
+      "output": "{\"route\":\"/the-studio\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/about",
+      "passed": true,
+      "output": "{\"route\":\"/about\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/lets-connect",
+      "passed": true,
+      "output": "{\"route\":\"/lets-connect\",\"errors\":[],\"confirmedFormFlow\":true}",
+      "error": ""
+    },
+    {
+      "route": "/contact",
+      "passed": true,
+      "output": "{\"route\":\"/contact\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/our-work",
+      "passed": true,
+      "output": "{\"route\":\"/our-work\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/privacy-policy",
+      "passed": true,
+      "output": "{\"route\":\"/privacy-policy\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/terms-and-conditions",
+      "passed": true,
+      "output": "{\"route\":\"/terms-and-conditions\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/refund-policy",
+      "passed": true,
+      "output": "{\"route\":\"/refund-policy\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    },
+    {
+      "route": "/404",
+      "passed": true,
+      "output": "{\"route\":\"/404\",\"errors\":[],\"confirmedFormFlow\":false}",
+      "error": ""
+    }
+  ]
+}

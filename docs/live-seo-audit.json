@@ -1,0 +1,511 @@
+{
+  "checkedOn": "2026-11-02",
+  "note": "Read-only HTTP audit, not a Search Console export or field CWV measurement.",
+  "results": [
+    {
+      "path": "/choreographer",
+      "status": 301,
+      "location": "https://mrmusicmack.com/choreographer/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/choreographer/",
+        "status": 200,
+        "title": "Wedding &amp; Sangeet Choreographer Jaipur | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/choreographer",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/music-editing",
+      "status": 301,
+      "location": "https://mrmusicmack.com/music-editing/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/music-editing/",
+        "status": 200,
+        "title": "Professional Music Editing, Song Mixing, Mashup &amp; DJ Remix Services in India",
+        "canonical": "https://mrmusicmack.com/music-editing",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/background-music",
+      "status": 301,
+      "location": "https://mrmusicmack.com/background-music/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/background-music/",
+        "status": 200,
+        "title": "Custom Background Music Production for Films, YouTube, Ads &amp; Launches in India",
+        "canonical": "https://mrmusicmack.com/background-music",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html",
+      "title": "Music Editing, Choreographer, Costume Design &amp; Background Music Services in India | MR MUSIC MACK",
+      "canonical": "https://mrmusicmack.com",
+      "robots": "index, follow, max-image-preview:large",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/",
+        "status": 200,
+        "title": "Music Editing, Choreographer, Costume Design &amp; Background Music Services in India | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/services",
+      "status": 301,
+      "location": "https://mrmusicmack.com/services/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/services/",
+        "status": 200,
+        "title": "Music Editing &amp; Audio Production Services | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/services",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/wedding-performance-music",
+      "status": 301,
+      "location": "https://mrmusicmack.com/wedding-performance-music/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/wedding-performance-music/",
+        "status": 200,
+        "title": "Wedding &amp; Performance Music | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/wedding-performance-music",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/wedding-music-editing",
+      "status": 301,
+      "location": "https://mrmusicmack.com/wedding-music-editing/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/wedding-music-editing/",
+        "status": 200,
+        "title": "Wedding Music Editing &amp; Sangeet Mashup Services in India",
+        "canonical": "https://mrmusicmack.com/wedding-music-editing",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/dance-performance-music-editing",
+      "status": 301,
+      "location": "https://mrmusicmack.com/dance-performance-music-editing/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/dance-performance-music-editing/",
+        "status": 200,
+        "title": "Dance Performance Music Editing Services in India",
+        "canonical": "https://mrmusicmack.com/dance-performance-music-editing",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/song-mixing-mashup",
+      "status": 301,
+      "location": "https://mrmusicmack.com/song-mixing-mashup/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/song-mixing-mashup/",
+        "status": 200,
+        "title": "Song Mixing &amp; Mashup Editing Services in India",
+        "canonical": "https://mrmusicmack.com/song-mixing-mashup",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/costume-design",
+      "status": 301,
+      "location": "https://mrmusicmack.com/costume-design/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/costume-design/",
+        "status": 200,
+        "title": "Costume Designer in Jaipur | Dance &amp; Stage Costumes | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/costume-design",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/dj-remix",
+      "status": 301,
+      "location": "https://mrmusicmack.com/dj-remix/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/dj-remix/",
+        "status": 200,
+        "title": "DJ Remix &amp; Song Re-Creation Services in India",
+        "canonical": "https://mrmusicmack.com/dj-remix",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/custom-music-production",
+      "status": 301,
+      "location": "https://mrmusicmack.com/custom-music-production/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/custom-music-production/",
+        "status": 200,
+        "title": "Custom Music Production Services in India | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/custom-music-production",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/background-music-for-short-films",
+      "status": 301,
+      "location": "https://mrmusicmack.com/background-music-for-short-films/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/background-music-for-short-films/",
+        "status": 200,
+        "title": "Background Music for Short Films in India",
+        "canonical": "https://mrmusicmack.com/background-music-for-short-films",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/background-music-for-advertisements",
+      "status": 301,
+      "location": "https://mrmusicmack.com/background-music-for-advertisements/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/background-music-for-advertisements/",
+        "status": 200,
+        "title": "Advertisement Background Music Services in India",
+        "canonical": "https://mrmusicmack.com/background-music-for-advertisements",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/background-music-for-youtube",
+      "status": 301,
+      "location": "https://mrmusicmack.com/background-music-for-youtube/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/background-music-for-youtube/",
+        "status": 200,
+        "title": "YouTube Background Music Services in India",
+        "canonical": "https://mrmusicmack.com/background-music-for-youtube",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/mix-mastering",
+      "status": 301,
+      "location": "https://mrmusicmack.com/mix-mastering/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/mix-mastering/",
+        "status": 200,
+        "title": "Mixing &amp; Mastering Services in India | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/mix-mastering",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/background-music-for-project-launches",
+      "status": 301,
+      "location": "https://mrmusicmack.com/background-music-for-project-launches/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/background-music-for-project-launches/",
+        "status": 200,
+        "title": "Project Launch Music Services in India",
+        "canonical": "https://mrmusicmack.com/background-music-for-project-launches",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/the-collection",
+      "status": 301,
+      "location": "https://mrmusicmack.com/the-collection/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/the-collection/",
+        "status": 200,
+        "title": "The Collection | Music, Choreography &amp; Costume Portfolio | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/the-collection",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/the-studio",
+      "status": 301,
+      "location": "https://mrmusicmack.com/the-studio/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/the-studio/",
+        "status": 200,
+        "title": "The Studio | Music Editing &amp; Creative Production | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/the-studio",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/lets-connect",
+      "status": 301,
+      "location": "https://mrmusicmack.com/lets-connect/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/lets-connect/",
+        "status": 200,
+        "title": "Let’s Connect | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/lets-connect",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/about",
+      "status": 301,
+      "location": "https://mrmusicmack.com/about/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/about/",
+        "status": 200,
+        "title": "About Our Jaipur Studio | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/about",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/contact",
+      "status": 301,
+      "location": "https://mrmusicmack.com/contact/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/contact/",
+        "status": 200,
+        "title": "Start Your Project | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/contact",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/privacy-policy",
+      "status": 301,
+      "location": "https://mrmusicmack.com/privacy-policy/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/privacy-policy/",
+        "status": 200,
+        "title": "Privacy Policy | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/privacy-policy",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/terms-and-conditions",
+      "status": 301,
+      "location": "https://mrmusicmack.com/terms-and-conditions/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/terms-and-conditions/",
+        "status": 200,
+        "title": "Terms &amp; Conditions | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/terms-and-conditions",
+        "robots": "noindex, follow",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/our-work",
+      "status": 301,
+      "location": "https://mrmusicmack.com/our-work/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/our-work/",
+        "status": 200,
+        "title": "Our Work &amp; Audio Demonstrations | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/our-work",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/refund-policy",
+      "status": 301,
+      "location": "https://mrmusicmack.com/refund-policy/",
+      "contentType": "text/html",
+      "title": "301 Moved Permanently",
+      "h1Count": 1,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/refund-policy/",
+        "status": 200,
+        "title": "Refund Policy | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/refund-policy",
+        "robots": "noindex, follow",
+        "h1Count": 1
+      }
+    },
+    {
+      "path": "/this-page-must-not-exist-seo-check",
+      "status": 404,
+      "location": null,
+      "contentType": "text/html",
+      "title": "404 Not Found",
+      "h1Count": 0,
+      "cache": null,
+      "final": {
+        "url": "https://mrmusicmack.com/this-page-must-not-exist-seo-check",
+        "status": 404,
+        "title": "404 Not Found",
+        "h1Count": 0
+      }
+    },
+    {
+      "url": "http://mrmusicmack.com/lets-connect",
+      "status": 301,
+      "location": "http://mrmusicmack.com/lets-connect/",
+      "contentType": "text/html",
+      "final": {
+        "url": "http://mrmusicmack.com/lets-connect/",
+        "status": 200,
+        "title": "Let’s Connect | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/lets-connect",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "url": "https://www.mrmusicmack.com/lets-connect",
+      "status": 301,
+      "location": "https://www.mrmusicmack.com/lets-connect/",
+      "contentType": "text/html",
+      "final": {
+        "url": "https://www.mrmusicmack.com/lets-connect/",
+        "status": 200,
+        "title": "Let’s Connect | MR MUSIC MACK",
+        "canonical": "https://mrmusicmack.com/lets-connect",
+        "robots": "index, follow, max-image-preview:large",
+        "h1Count": 1
+      }
+    },
+    {
+      "url": "https://mrmusicmack.com/lets-connect/",
+      "status": 200,
+      "location": null,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://mrmusicmack.com/robots.txt",
+      "status": 200,
+      "location": null,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "https://mrmusicmack.com/sitemap.xml",
+      "status": 200,
+      "location": null,
+      "contentType": "text/xml"
+    }
+  ]
+}

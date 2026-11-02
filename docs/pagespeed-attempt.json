@@ -1,0 +1,7 @@
+{
+  "checkedOn": "2026-11-02",
+  "strategy": "mobile",
+  "httpStatus": 429,
+  "error": "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'pagespeedonline.googleapis.com' for consumer 'project_number:583797351490'.",
+  "lighthouse": null
+}
