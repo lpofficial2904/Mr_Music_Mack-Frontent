@@ -108,6 +108,13 @@ try {
   assert.match(published, /Published photo test/);
   assert.doesNotMatch(published, /Hidden audio test/);
   assert.doesNotMatch(collection([]), /Published audio test|\/media\/test.mp3/);
+  const reelHtml = renderToStaticMarkup(React.createElement(OurWork, {
+    collectionPage: true, managedMedia: [], managedProjects: [],
+    managedReels: [{ title: "Wedding reel", href: "https://www.instagram.com/reel/DUr_lWiCUp4/", enabled: true }],
+  }));
+  assert.doesNotMatch(reelHtml, /<iframe[^>]+src="https:\/\/www\.instagram\.com/);
+  assert.match(reelHtml, /Open on Instagram/);
+  assert.match(reelHtml, /Play Wedding reel Instagram reel/);
 
   const cardHtml = renderToStaticMarkup(
     React.createElement(

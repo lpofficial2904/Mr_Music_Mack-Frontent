@@ -314,8 +314,6 @@ export default function OurWork({
   const instagramProjects = useMemo(() => (Array.isArray(managedReels) ? managedReels : defaultInstagramProjects)
     .filter((item) => item.enabled !== false && getInstagramEmbedUrl(item.href)), [managedReels]);
   useEffect(() => { setActiveInstagramReel(""); }, [instagramProjects]);
-  const [instagramEmbedsEnabled, setInstagramEmbedsEnabled] = useState(true);
-  const [instagramResetKey, setInstagramResetKey] = useState(0);
   const [activeCollectionVideos, setActiveCollectionVideos] = useState(() =>
     Object.fromEntries(collectionVideoCategories.map((item) => [item.id, 0])),
   );
@@ -365,8 +363,6 @@ export default function OurWork({
     setActiveYoutubeVideo(null);
     setAudibleCollectionVideo("");
     collectionVideoPlayers.current.forEach((player) => player.pause());
-    setInstagramEmbedsEnabled(true);
-    setInstagramResetKey((value) => value + 1);
     setActiveInstagramReel(cardKey);
   }
 
@@ -416,19 +412,12 @@ export default function OurWork({
       const isVisible = visibleRatio >= 0.45;
 
       if (!isVisible) {
-        setInstagramEmbedsEnabled(false);
         setActiveInstagramReel("");
-        setInstagramResetKey((value) => value + 1);
-        return;
       }
-
-      setInstagramEmbedsEnabled(true);
     };
     const resetInstagramOnHiddenTab = () => {
       if (document.hidden) {
-        setInstagramEmbedsEnabled(false);
         setActiveInstagramReel("");
-        setInstagramResetKey((value) => value + 1);
       } else {
         resetInstagramWhenHidden();
       }
@@ -891,10 +880,11 @@ export default function OurWork({
             viewport={{ once: true, amount: 0.25 }}
             transition={{ delay: index * 0.04, duration: 0.45 }}
           >
-            {instagramEmbedsEnabled && (
+            <img src={mediaUrl(project.poster || project.image) || liveRecordingImage} alt="" loading="lazy" decoding="async" />
+            {isActive && (
               <iframe
                 title={`${project.title} Instagram reel`}
-                key={`${cardKey}-${instagramResetKey}-${isActive ? "active" : "idle"}`}
+                key={cardKey}
                 src={getInstagramEmbedSrc(project.embedUrl, isActive)}
                 loading="lazy"
                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
@@ -913,6 +903,7 @@ export default function OurWork({
             >
               {isActive ? "Playing" : "Play"}
             </button>
+            <a className="reel-external-link" href={project.href} target="_blank" rel="noopener noreferrer" aria-label={`Open ${project.title} on Instagram`}>Open on Instagram ?</a>
             <b>{project.platform || "Instagram"}</b>
             <span>{project.title}</span>
           </m.article>
@@ -958,8 +949,7 @@ export default function OurWork({
               type="button"
               onClick={() => {
                 stopPlayback();
-                setInstagramResetKey((value) => value + 1);
-                setActiveYoutubeVideo(video.id);
+                            setActiveYoutubeVideo(video.id);
               }}
               aria-label={`Play ${video.title} YouTube video`}
             >

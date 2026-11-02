@@ -12986,3 +12986,5 @@ body:has(.reference-hero) .site-navbar-actions .nav-cta {
 .service-question summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
 .service-question p { margin-top: 12px; }
 .service-question + .button { margin-top: 24px; }
+
+.media-reel-card a.reel-external-link { inset: 16px auto auto 16px; z-index: 6; width: auto; height: auto; padding: 8px 12px; border-radius: 6px; background: rgba(5,8,12,.85); color: #fff; font-size: 12px; text-decoration: none; }
