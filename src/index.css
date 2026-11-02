@@ -12988,3 +12988,14 @@ body:has(.reference-hero) .site-navbar-actions .nav-cta {
 .service-question + .button { margin-top: 24px; }
 
 .media-reel-card a.reel-external-link { inset: 16px auto auto 16px; z-index: 6; width: auto; height: auto; padding: 8px 12px; border-radius: 6px; background: rgba(5,8,12,.85); color: #fff; font-size: 12px; text-decoration: none; }
+
+/* Match the navbar's collapsed breakpoint; older 1220px rules must not show
+   the mobile toggle beside the full desktop navigation. */
+.site-navbar-actions .menu-toggle {
+  display: none !important;
+}
+@media (max-width: 1160px) {
+  .site-navbar-actions .menu-toggle {
+    display: grid !important;
+  }
+}
